@@ -5,7 +5,9 @@ using System.Text;
 
 namespace Assets.Scripts
 {
-    public class Attribute
+    public class BaseAttribute
     {
+        protected float _maxValue;
+        protected float _currentValue;
     }
 }
