@@ -17,17 +17,17 @@ namespace Assets.Scripts
                 Die();
             }
         }
-
-        //On Update, move toward target.
-        public override void Awake()
+        
+        [OnAwake]
+        public void OrcAwake()
         {
-            base.Awake();
             health = new Health(100.0f);
             walk = new WalkTowardTargetAction(this, 2.0f);
             walk.target = Target.GetComponent<BaseEntity>(); //gameObject.GetComponent<BaseEntity>();
         }
 
-        void FixedUpdate()
+        [OnUpdate]
+        public void OrcUpdate()
         {
             walk.PerformAction();
         }
