@@ -24,9 +24,9 @@ public class BaseEntity : MonoBehaviour {
     {
         Effects = new List<Effect>();
         OnUpdateMethods = (OnUpdateMethodsType) AddAttributedMethodsToDelegate<OnUpdateAttribute, OnUpdateMethodsType>();
-        OnAwakeMethods = (OnAwakeMethodsType)AddAttributedMethodsToDelegate<OnAwakeAttribute, OnUpdateMethodsType>();
-        OnStartMethods = (OnStartMethodsType)AddAttributedMethodsToDelegate<OnStartAttribute, OnUpdateMethodsType>();
-        OnFixedUpdateMethods = (OnFixedUpdateMethodsType)AddAttributedMethodsToDelegate<OnFixedUpdateAttribute, OnUpdateMethodsType>();
+        OnAwakeMethods = (OnAwakeMethodsType)AddAttributedMethodsToDelegate<OnAwakeAttribute, OnAwakeMethodsType>();
+        OnStartMethods = (OnStartMethodsType)AddAttributedMethodsToDelegate<OnStartAttribute, OnStartMethodsType>();
+        OnFixedUpdateMethods = (OnFixedUpdateMethodsType)AddAttributedMethodsToDelegate<OnFixedUpdateAttribute, OnFixedUpdateMethodsType>();
         if (OnAwakeMethods != null)
         {
             OnAwakeMethods.Invoke();
