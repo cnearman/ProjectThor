@@ -14,6 +14,7 @@ namespace Assets.Scripts
 
         void OnTriggerEnter(Collider other)
         {
+            Debug.Log("Trigger Enter Melee Hurtbox");
             var player = other.GetComponent<Player>();
             if (player != null)
             {
