@@ -13,6 +13,8 @@ namespace Assets.Scripts
         public float walkRange = 2.5f;
         public float attackRange = 2.5f;
 
+        private Animator _animator;
+
         public void ApplyDamage(float damage)
         {
             health.Damage(damage);
@@ -29,6 +31,7 @@ namespace Assets.Scripts
             walk = new WalkTowardTargetAction(this, 2.0f);
             walk.target = Target.GetComponent<BaseEntity>();
             attack = new MeleeAttackAction(this, Hurtbox);
+            _animator = GetComponent<Animator>();
         }
 
         [OnUpdate]
@@ -41,9 +44,16 @@ namespace Assets.Scripts
                 attack.PerformAction();
             }
 
+            _animator.SetBool("Attack", attack.IsAttacking);
+
             if (_shouldWalk)
             {
                 walk.PerformAction();
+                _animator.SetBool("Walk", true);
+            }
+            else
+            {
+                _animator.SetBool("Walk", false);
             }
         }
 

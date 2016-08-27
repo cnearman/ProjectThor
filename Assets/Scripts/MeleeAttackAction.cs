@@ -43,10 +43,11 @@ namespace Assets.Scripts
             Debug.Log("Starting Windup: " + DateTime.Now.Second);
             yield return new WaitForSeconds(0.8f);
             Debug.Log("Ending Windup: " + DateTime.Now.Second);
-            var boxInstance = MonoBehaviour.Instantiate(_hurtbox, _entity.transform.position + (_entity.transform.forward * 2), _entity.transform.rotation);
-            var boxRef = ((GameObject)boxInstance).GetComponent<MeleeHurtbox>();
-            //when attack has completed set attack to completed.
-            boxRef.CleanupMethod = Cleanup;
+            /*var boxInstance = MonoBehaviour.Instantiate(_hurtbox, _entity.transform.position + (_entity.transform.forward * 2), _entity.transform.rotation);
+             var boxRef = ((GameObject)boxInstance).GetComponent<MeleeHurtbox>();
+             //when attack has completed set attack to completed.
+             boxRef.CleanupMethod = Cleanup;*/
+            IsAttacking = false;
         }
     }
 }
