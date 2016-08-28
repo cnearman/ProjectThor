@@ -26,6 +26,7 @@ namespace Assets.Scripts
             var targetVector = (new Vector3(targetPosition.x, 0, targetPosition.z) - new Vector3(currentPosition.x, 0, currentPosition.z));
             targetVector.Normalize();
             _rigidbody.MovePosition(currentPosition + ( targetVector * MovementSpeed ) * Time.deltaTime);
+            _rigidbody.MoveRotation(Quaternion.LookRotation(targetVector));
         }
     }
 }
