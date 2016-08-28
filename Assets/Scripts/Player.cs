@@ -25,9 +25,9 @@ namespace Assets.Scripts
             }
         }
 
-        public override void Awake()
+        [OnAwake]
+        public void PlayerAwake()
         {
-            base.Awake();
             walk = new WalkTowardTargetAction(this, 5.0f);
             walk.target = target.GetComponent<BaseEntity>();
             //damage = new TestDamageAction(Target.GetComponent<BaseEntity>(), 20.0f);
@@ -35,10 +35,9 @@ namespace Assets.Scripts
             damage = new TestDamageAction(target.GetComponent<BaseEntity>(), 20.0f);
         }
 
-
-        public override void Update()
+        [OnUpdate]
+        public void PlayerUpdate()
         {
-            base.Update();
             if (Input.GetButtonDown("Fire1"))
             {
                 damage.PerformAction();
@@ -54,7 +53,8 @@ namespace Assets.Scripts
             }
         }
 
-        void FixedUpdate()
+        [OnFixedUpdate]
+        public void PlayerFixedUpdate()
         {
             if (Vector3.Distance(gameObject.transform.position - new Vector3(0f, 1f, 0f), target.transform.position) > grace)
             {
