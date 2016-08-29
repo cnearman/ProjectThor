@@ -12,13 +12,19 @@ namespace Assets.Scripts
         private BaseEntity _entity;
         private GameObject _hurtbox;
 
+        private float _windupTime;
+
         public bool IsAttacking;
 
-        public MeleeAttackAction(BaseEntity entity, GameObject hurtbox)
+        private List<string> Tags;
+
+        public MeleeAttackAction(BaseEntity entity, GameObject hurtbox, float windup, string tag)
         {
             _entity = entity;
             _hurtbox = hurtbox;
+            _windupTime = windup;
             IsAttacking = false;
+            Tags = new List<string>() { tag };
         }
 
         public override void PerformAction()
@@ -41,13 +47,13 @@ namespace Assets.Scripts
         IEnumerator WaitForWindup()
         {
             Debug.Log("Starting Windup: " + DateTime.Now.Second);
-            yield return new WaitForSeconds(0.8f);
+            yield return new WaitForSeconds(_windupTime);
             Debug.Log("Ending Windup: " + DateTime.Now.Second);
-            /*var boxInstance = MonoBehaviour.Instantiate(_hurtbox, _entity.transform.position + (_entity.transform.forward * 2), _entity.transform.rotation);
-             var boxRef = ((GameObject)boxInstance).GetComponent<MeleeHurtbox>();
-             //when attack has completed set attack to completed.
-             boxRef.CleanupMethod = Cleanup;*/
-            IsAttacking = false;
+            var boxInstance = MonoBehaviour.Instantiate(_hurtbox, _entity.transform.position + (_entity.transform.forward * 2), _entity.transform.rotation);
+            var boxRef = ((GameObject)boxInstance).GetComponent<MeleeHurtbox>();
+            //when attack has completed set attack to completed.
+            boxRef.CleanupMethod = Cleanup;
+            boxRef.Tags = Tags;
         }
     }
 }

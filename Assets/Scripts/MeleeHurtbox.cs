@@ -11,15 +11,29 @@ namespace Assets.Scripts
         public System.Action CleanupMethod;
         public float Lifespan = 2.0f;
         private float _damageValue = 40;
+        public List<string> Tags;
+
+        [OnAwake]
+        public void Initialize()
+        {
+            if (Tags == null)
+            {
+                Tags = new List<string>() { "" };
+            }
+        }
 
         void OnTriggerEnter(Collider other)
         {
             Debug.Log("Trigger Enter Melee Hurtbox");
-            var player = other.GetComponent<Player>();
-            if (player != null)
+            if ( Tags.Any(m => other.CompareTag(m)))
             {
-                player.Effects.Add(new DamageEffect((Damagable)player, _damageValue));
+                var entity = other.GetComponent<BaseEntity>();
+                if (entity != null)
+                {
+                    entity.Effects.Add(new DamageEffect((Damagable)entity, _damageValue));
+                }
             }
+
         }
 
         [OnUpdate]

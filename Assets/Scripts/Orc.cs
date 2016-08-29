@@ -30,7 +30,7 @@ namespace Assets.Scripts
             health = new Health(100.0f);
             walk = new WalkTowardTargetAction(this, 2.0f);
             walk.target = Target.GetComponent<BaseEntity>();
-            attack = new MeleeAttackAction(this, Hurtbox);
+            attack = new MeleeAttackAction(this, Hurtbox, 0.8f, "Player");
             _animator = GetComponent<Animator>();
         }
 
@@ -41,7 +41,7 @@ namespace Assets.Scripts
             //else walk.
             if (_shouldAttack)
             {
-                attack.PerformAction();
+                //attack.PerformAction();
             }
 
             _animator.SetBool("Attack", attack.IsAttacking);

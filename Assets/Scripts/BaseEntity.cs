@@ -58,6 +58,7 @@ public class BaseEntity : MonoBehaviour {
 
     public virtual void FixedUpdate()
     {
+        Debug.Log("Base FixedUpdate");
         if (OnFixedUpdateMethods != null)
         {
             OnFixedUpdateMethods.Invoke();
