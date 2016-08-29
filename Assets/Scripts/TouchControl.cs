@@ -15,7 +15,7 @@ public class TouchControl : MonoBehaviour {
 	void Update () {
         foreach (Touch currentTouches in Input.touches)
         {
-            Debug.Log("touched");
+            //Debug.Log("touched");
             if (currentTouches.phase == TouchPhase.Ended)
             {
                 var ray = Camera.main.ScreenPointToRay(currentTouches.position);
