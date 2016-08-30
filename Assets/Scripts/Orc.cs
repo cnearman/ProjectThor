@@ -24,7 +24,7 @@ namespace Assets.Scripts
             }
         }
         
-        [OnAwake]
+        [OnStart]
         public void OrcAwake()
         {
             health = new Health(100.0f);
