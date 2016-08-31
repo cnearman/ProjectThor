@@ -11,7 +11,8 @@ namespace Assets.Scripts
     {
         private BaseEntity _entity;
         private GameObject _hurtbox;
-
+        private Rigidbody _rigidbody;
+        public GameObject Target;
         private float _windupTime;
 
         public bool IsAttacking;
@@ -24,24 +25,31 @@ namespace Assets.Scripts
             _hurtbox = hurtbox;
             _windupTime = windup;
             IsAttacking = false;
+            _rigidbody = entity.GetComponent<Rigidbody>();
             Tags = new List<string>() { tag };
         }
 
         public override void PerformAction()
         {
-            IsAttacking = true;
-            Debug.Log("Starting Attack");
-            //start windup timer
-            _entity.StartCoroutine(WaitForWindup());
-            //when completed, start attack.
-
-
+            if (!IsAttacking && Target != null)
+            {
+                IsAttacking = true;
+                var currentPosition = _rigidbody.position;
+                var targetPosition = Target.transform.position;
+                var targetVector = (new Vector3(targetPosition.x, 0, targetPosition.z) - new Vector3(currentPosition.x, 0, currentPosition.z));
+                _rigidbody.MoveRotation(Quaternion.LookRotation(targetVector));
+                Debug.Log("Starting Attack");
+                //start windup timer
+                _entity.StartCoroutine(WaitForWindup());
+                //when completed, start attack.
+            }
         }
 
         public void Cleanup()
         {
             Debug.Log("Ending Attack");
             IsAttacking = false;
+            IsCompleted = true;
         }
 
         IEnumerator WaitForWindup()

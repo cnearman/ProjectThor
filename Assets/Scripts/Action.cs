@@ -7,6 +7,7 @@ namespace Assets.Scripts
 {
     public class Action
     {
+        public bool IsCompleted { get; internal set; }
         public virtual void PerformAction() { }
     }
 }

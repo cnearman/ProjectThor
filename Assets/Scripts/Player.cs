@@ -17,8 +17,36 @@ namespace Assets.Scripts
         public float attackRange;
         public GameObject hurtbox;
 
+        public Action currentAction;
+        public Action nextAction;
+        public Action thirdAction;
+
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
+
+        private bool _performingAction
+        {
+            get
+            {
+                return currentAction != null && (!currentAction.IsCompleted || nextAction != null);
+            }
+        }
+
+        private bool _performingAttack
+        {
+            get
+            {
+                return currentAction != null && !currentAction.IsCompleted && currentAction is MeleeAttackAction;
+            }
+        }
+
+        private bool _performingMove
+        {
+            get
+            {
+                return currentAction != null && !currentAction.IsCompleted && currentAction is WalkTowardTargetAction;
+            }
+        }
 
         public void ApplyDamage(float damage)
         {
@@ -36,62 +64,110 @@ namespace Assets.Scripts
             walk = new WalkTowardTargetAction(this, 5.0f);
             attack = new MeleeAttackAction(this, hurtbox, 0.0f, "Enemy");
             Retarget();
-            //damage = new TestDamageAction(Target.GetComponent<BaseEntity>(), 20.0f);
             health = new Health(1000.0f);
-            //damage = new TestDamageAction(_target.GetComponent<BaseEntity>(), 20.0f);
         }
 
         [OnUpdate]
         public void PlayerUpdate()
         {
-            /*if (Input.GetButtonDown("Fire1"))
+            //If touch doesn't touch an enemy
+            //And top of Queue is move
+            // Clear Queue and Queue up move
+            //If touch does touch an enemy can can attack it
+            // Queue up attack
+            //If touch does touch an enemy and can't attack it
+            // queue up move and attack.
+
+            if (currentAction != null && currentAction.IsCompleted) 
             {
-                damage.PerformAction();
-            }*/
+                currentAction = nextAction;
+                nextAction = thirdAction;
+                thirdAction = null;
+            }
 
             foreach (Touch currentTouches in Input.touches)
             {
                 if (currentTouches.phase == TouchPhase.Ended)
                 {
                     var ray = Camera.main.ScreenPointToRay(currentTouches.position);
-                    MoveTo(ray);
+                    ProcessInput(ray);
                 }
             }
-        }
 
-        [OnFixedUpdate]
-        public void PlayerFixedUpdate()
-        {
-            Debug.Log("Fixed Update");
-            if (Vector3.Distance(gameObject.transform.position - new Vector3(0f, 1f, 0f), _target.transform.position) > grace)
+            if (currentAction != null)
             {
-                walk.PerformAction();
+                Debug.Log("Performing Action :" + currentAction.GetType().Name);
+                currentAction.PerformAction();
             }
         }
 
-        void MoveTo(Ray ray)
+        void ProcessInput(Ray ray)
         {
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f, wallMask))
             {
                 var enemy = hit.collider.gameObject.GetComponent<BaseEnemy>();
-                if ( enemy != null)
+
+                if ( enemy != null) // Touch was an enemy
                 {
                     _target = enemy.gameObject;
-                    if (Vector3.Distance(gameObject.transform.position - new Vector3(0f, 1f, 0f), _target.transform.position) <= attackRange)
+                    var pPos = gameObject.transform.position;
+                    var ePos = _target.transform.position;
+                    if (Vector3.Distance(new Vector3(pPos.x, 0, pPos.z), new Vector3(ePos.x, 0, ePos.z)) <= attackRange) // within range
                     {
-                        attack.PerformAction();
+                        if (_performingAttack)
+                        {
+                            Debug.Log("Queue Second Attack");
+                            attack.Target = _target;
+                            nextAction = attack;
+                        }
+                        else
+                        {
+                            Debug.Log("Queue First Attack");
+                            ClearActions();
+                            attack.Target = _target;
+                            currentAction = attack;
+                        }
+                    }
+                    else
+                    {
+                        if (_performingAttack)
+                        {
+                            Debug.Log("Queue Second Walk Then Attack");
+                            nextAction = walk;
+                            attack.Target = _target;
+                            thirdAction = attack;
+                        }
+                        else
+                        {
+                            Debug.Log("Queue Walk Then Attack");
+                            currentAction = walk;
+                            attack.Target = _target;
+                            nextAction = attack;
+                        }
+
+                    }
+                }
+                else // Touch was not an enemy
+                {
+                    if (_performingAttack)
+                    {
+                        Debug.Log("Queue wait then, New Walk to point");
+                        nextAction = walk;
                         _target = target;
                         _target.transform.position = hit.point;
                         _target.GetComponent<Cursor>().PlayPart();
                     }
-                }
-                else
-                {
-                    _target = target;
-                    _target.transform.position = hit.point;
-                    _target.GetComponent<Cursor>().PlayPart();
+                    else
+                    {
+                        Debug.Log("Queue New Walk to point");
+                        ClearActions();
+                        currentAction = walk;
+                        _target = target;
+                        _target.transform.position = hit.point;
+                        _target.GetComponent<Cursor>().PlayPart();
+                    }
                 }
                 Retarget();
             }
@@ -106,6 +182,12 @@ namespace Assets.Scripts
         {
             var newTarget = _target.GetComponent<BaseEntity>();
             walk.target = newTarget;
+        }
+
+        void ClearActions()
+        {
+            currentAction = null;
+            nextAction = null;
         }
 
     }
