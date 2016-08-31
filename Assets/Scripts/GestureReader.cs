@@ -107,6 +107,24 @@ public class GestureReader : MonoBehaviour {
         }
     }
 
+    Vector3 preTapLocation;
+    GameObject preTapEnemy;
+
+    void PreTapAction(Ray preTap)
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(preTap, out hit, 100f, wallMask))
+        {
+            preTapLocation = hit.point;
+        }
+    }
+
+    void PostTapAction()
+    {
+
+    }
+
     // Update is called once per frame
     void Update()
     {
