@@ -18,7 +18,7 @@ namespace Assets.Scripts
         {
             if (Tags == null)
             {
-                Tags = new List<string>() { "" };
+                Tags = new List<string>() { string.Empty };
             }
         }
 
@@ -33,7 +33,6 @@ namespace Assets.Scripts
                     entity.Effects.Add(new DamageEffect((Damagable)entity, _damageValue));
                 }
             }
-
         }
 
         [OnUpdate]

@@ -29,6 +29,15 @@ namespace Assets.Scripts
             Tags = new List<string>() { tag };
         }
 
+        public MeleeAttackAction(MeleeAttackActionParameters parameters)
+        {
+            _entity = parameters.Entity;
+            _hurtbox = parameters.HurtBox;
+            Target = parameters.Target;
+            _windupTime = parameters.WindupTime;
+            Tags = parameters.Tags;
+        }
+
         public override void PerformAction()
         {
             if (!IsAttacking && Target != null)

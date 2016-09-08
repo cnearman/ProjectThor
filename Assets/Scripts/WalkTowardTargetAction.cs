@@ -21,6 +21,14 @@ namespace Assets.Scripts
             MovementSpeed = ms;
         }
 
+        public WalkTowardTargetAction(WalkTowardTargetActionParameters parameters)
+        {
+            _rigidbody = parameters.Entity.GetComponent<Rigidbody>();
+            MovementSpeed = parameters.MovementSpeed;
+            target = parameters.Target;
+            GraceRange = parameters.GraceRange;
+        }
+
         public override void PerformAction()
         {
             IsCompleted = false;

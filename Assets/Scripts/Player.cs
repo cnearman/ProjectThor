@@ -18,7 +18,6 @@ namespace Assets.Scripts
 
         public GameObject target;
         private GameObject _target;
-        //TestDamageAction damage;
         WalkTowardTargetAction walk;
         MeleeAttackAction attack;
         public float grace;
@@ -69,9 +68,8 @@ namespace Assets.Scripts
         public void PlayerAwake()
         {
             _target = target;
-            walk = new WalkTowardTargetAction(this, 5.0f);
-            attack = new MeleeAttackAction(this, hurtbox, 0.0f, "Enemy");
-            Retarget();
+            //walk = new WalkTowardTargetAction(this, 5.0f);
+            //attack = new MeleeAttackAction(this, hurtbox, 0.0f, "Enemy");
             health = new Health(1000.0f);
 
             tapGrace = Screen.height / 15f;
@@ -246,15 +244,29 @@ namespace Assets.Scripts
                     if (_performingAttack)
                     {
                         Debug.Log("Queue Second Attack");
-                        attack.Target = _target;
-                        nextAction = attack;
+                        //TODO: Stop multiple queueing of melee attack actions.
+                        // This might be fine, but it's not a very robust system.
+                        nextAction = new MeleeAttackAction(new MeleeAttackActionParameters
+                        {
+                            Entity = this,
+                            Target = _target,
+                            HurtBox = hurtbox,
+                            WindupTime = 0.0f,
+                            Tags = new List<string> { "Enemy" }
+                        });
                     }
                     else
                     {
                         Debug.Log("Queue First Attack");
                         ClearActions();
-                        attack.Target = _target;
-                        currentAction = attack;
+                        currentAction = new MeleeAttackAction(new MeleeAttackActionParameters
+                        {
+                            Entity = this,
+                            Target = _target,
+                            HurtBox = hurtbox,
+                            WindupTime = 0.0f,
+                            Tags = new List<string> { "Enemy" }
+                        });
                     }
                 }
                 else
@@ -262,16 +274,40 @@ namespace Assets.Scripts
                     if (_performingAttack)
                     {
                         Debug.Log("Queue Second Walk Then Attack");
-                        nextAction = walk;
-                        attack.Target = _target;
-                        thirdAction = attack;
+                        nextAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
+                        {
+                            Entity = this,
+                            Target = _target.GetComponent<BaseEntity>(),
+                            MovementSpeed = 5.0f,
+                            GraceRange = 2.5f
+                        });
+                        thirdAction = new MeleeAttackAction(new MeleeAttackActionParameters
+                        {
+                            Entity = this,
+                            Target = _target,
+                            HurtBox = hurtbox,
+                            WindupTime = 0.0f,
+                            Tags = new List<string> { "Enemy" }
+                        });
                     }
                     else
                     {
                         Debug.Log("Queue Walk Then Attack");
-                        currentAction = walk;
-                        attack.Target = _target;
-                        nextAction = attack;
+                        currentAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
+                        {
+                            Entity = this,
+                            Target = _target.GetComponent<BaseEntity>(),
+                            MovementSpeed = 5.0f,
+                            GraceRange = 2.5f
+                        });
+                        nextAction = new MeleeAttackAction(new MeleeAttackActionParameters
+                        {
+                            Entity = this,
+                            Target = _target,
+                            HurtBox = hurtbox,
+                            WindupTime = 0.0f,
+                            Tags = new List<string> { "Enemy" }
+                        });
                     }
 
                 }
@@ -281,7 +317,13 @@ namespace Assets.Scripts
                 if (_performingAttack)
                 {
                     Debug.Log("Queue wait then, New Walk to point");
-                    nextAction = walk;
+                    nextAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
+                    {
+                        Entity = this,
+                        Target = target.GetComponent<BaseEntity>(),
+                        MovementSpeed = 5.0f,
+                        GraceRange = 2.5f
+                    });
                     _target = target;
                     _target.transform.position = preTapLocation;
                     _target.GetComponent<Cursor>().PlayPart();
@@ -290,24 +332,23 @@ namespace Assets.Scripts
                 {
                     Debug.Log("Queue New Walk to point");
                     ClearActions();
-                    currentAction = walk;
+                    currentAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
+                    {
+                        Entity = this,
+                        Target = target.GetComponent<BaseEntity>(),
+                        MovementSpeed = 5.0f,
+                        GraceRange = 2.5f
+                    });
                     _target = target;
                     _target.transform.position = preTapLocation;
                     _target.GetComponent<Cursor>().PlayPart();
                 }
             }
-            Retarget();
         }
 
         void Die()
         {
             Destroy(gameObject);
-        }
-
-        void Retarget()
-        {
-            var newTarget = _target.GetComponent<BaseEntity>();
-            walk.target = newTarget;
         }
 
         void ClearActions()
