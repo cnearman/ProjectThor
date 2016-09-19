@@ -27,3 +27,5 @@ sysinfo.txt
 
 # Builds
 *.unitypackage
+Assets/Scripts/Player.cs.orig
+Assets/Scripts/Player.cs.orig.meta

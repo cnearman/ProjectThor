@@ -15,8 +15,12 @@ namespace Assets.Scripts
 
         private Animator _animator;
 
+        public ParticleSystem blood;
+
         public void ApplyDamage(float damage)
         {
+            blood.Stop();
+            blood.Play();
             health.Damage(damage);
             if(health.IsDead)
             {
