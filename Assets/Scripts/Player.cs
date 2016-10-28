@@ -279,7 +279,7 @@ namespace Assets.Scripts
                             Entity = this,
                             Target = _target.GetComponent<BaseEntity>(),
                             MovementSpeed = 5.0f,
-                            GraceRange = 2.5f
+                            GraceRange = 0.3f
                         });
                         thirdAction = new MeleeAttackAction(new MeleeAttackActionParameters
                         {
@@ -298,7 +298,7 @@ namespace Assets.Scripts
                             Entity = this,
                             Target = _target.GetComponent<BaseEntity>(),
                             MovementSpeed = 5.0f,
-                            GraceRange = 2.5f
+                            GraceRange = 0.3f
                         });
                         nextAction = new MeleeAttackAction(new MeleeAttackActionParameters
                         {
@@ -322,7 +322,7 @@ namespace Assets.Scripts
                         Entity = this,
                         Target = target.GetComponent<BaseEntity>(),
                         MovementSpeed = 5.0f,
-                        GraceRange = 2.5f
+                        GraceRange = 0.3f
                     });
                     _target = target;
                     _target.transform.position = preTapLocation;
@@ -337,7 +337,7 @@ namespace Assets.Scripts
                         Entity = this,
                         Target = target.GetComponent<BaseEntity>(),
                         MovementSpeed = 5.0f,
-                        GraceRange = 2.5f
+                        GraceRange = 0.3f
                     });
                     _target = target;
                     _target.transform.position = preTapLocation;

@@ -26,5 +26,9 @@ public class MenuFuntions : MonoBehaviour {
         {
             SceneManager.LoadScene("basicTouch");
         }
+        else if (level == 4)
+        {
+            SceneManager.LoadScene("map");
+        }
     }
 }
