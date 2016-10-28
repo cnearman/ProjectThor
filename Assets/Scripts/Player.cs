@@ -28,6 +28,8 @@ namespace Assets.Scripts
         public Action nextAction;
         public Action thirdAction;
 
+        public float dashStartingGrace = 2.0f;
+
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
 
@@ -149,7 +151,10 @@ namespace Assets.Scripts
                     }
                     else
                     {
-                        Gesture[] tempTrainers = { trainers[0] };
+                        Point[] tempLine = { firstPoint, lastPoint };
+                        Gesture lineGesture = new Gesture(tempLine, "tLine");
+
+                        Gesture[] tempTrainers = { trainers[0], lineGesture };
 
                         //send to PDollar
                         Point[] pointArray = currentPoints.ToArray();
@@ -164,10 +169,40 @@ namespace Assets.Scripts
                             currentHC.transform.position = transform.position;
                             currentHC.transform.parent = transform;
                         }
-                    }
+                        else if(nameOfShape == "tLine")
+                        {
+                            Debug.Log("Line");
+                            var ray1 = Camera.main.ScreenPointToRay(new Vector3(firstPoint.X, firstPoint.Y, 0f));
+                            var ray2 = Camera.main.ScreenPointToRay(new Vector3(lastPoint.X, lastPoint.Y, 0f));
 
-                    //var ray = Camera.main.ScreenPointToRay(currentTouches.position);
-                    //MoveTo(ray);
+                            RaycastHit hit1;
+                            RaycastHit hit2;
+                            Vector3 pos1 = new Vector3();
+                            Vector3 pos2 = new Vector3();
+                            if (Physics.Raycast(ray1, out hit1, 100f, wallMask))
+                            {
+                                pos1 = hit1.point;
+                            }
+
+                            if (Physics.Raycast(ray2, out hit2, 100f, wallMask))
+                            {
+                                pos2 = hit2.point;
+                            }
+                            if (new Vector3(pos1.x - transform.position.x, 0 , pos1.z - transform.position.z).magnitude <= dashStartingGrace)
+                            {
+                                ClearActions();
+                                currentAction = new DashAction(
+                                    new DashActionParameters
+                                    {
+                                        Entity = this,
+                                        DashDamage = 30,
+                                        DashRange = 10.0f,
+                                        Target = new Vector3(pos2.x, transform.position.y, pos2.z),
+                                        Tags = new List<string> { "Enemy" }
+                                    });
+                            }
+                        }
+                    }
                 }
                 else
                 {
