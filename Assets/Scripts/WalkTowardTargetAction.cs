@@ -13,6 +13,8 @@ namespace Assets.Scripts
 
         private float GraceRange = 1.0f;
 
+        private NavMeshAgent agent;
+
         public BaseEntity target { get; set; }
 
         public WalkTowardTargetAction(BaseEntity entity, float ms)
@@ -27,15 +29,20 @@ namespace Assets.Scripts
             MovementSpeed = parameters.MovementSpeed;
             target = parameters.Target;
             GraceRange = parameters.GraceRange;
+            agent = parameters.Entity.GetComponent<NavMeshAgent>();
+
+            agent.SetDestination(target.transform.position);
+            IsCompleted = true;
         }
 
         public override void PerformAction()
         {
-            IsCompleted = false;
-            var currentPosition = _rigidbody.position;
-            var targetPosition = target.transform.position;
-            var targetVector = (new Vector3(targetPosition.x, 0, targetPosition.z) - new Vector3(currentPosition.x, 0, currentPosition.z));
-            if (targetVector.magnitude > GraceRange)
+            //IsCompleted = false;
+            //var currentPosition = _rigidbody.position;
+            //var targetPosition = target.transform.position;
+            //var targetVector = (new Vector3(targetPosition.x, 0, targetPosition.z) - new Vector3(currentPosition.x, 0, currentPosition.z));
+
+            /*if (targetVector.magnitude > GraceRange)
             {
                 targetVector.Normalize();
                 _rigidbody.MovePosition(currentPosition + (targetVector * MovementSpeed) * Time.deltaTime);
@@ -44,7 +51,7 @@ namespace Assets.Scripts
             else
             {
                 IsCompleted = true;
-            }
+            }*/
         }
     }
 }

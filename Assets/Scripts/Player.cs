@@ -33,6 +33,8 @@ namespace Assets.Scripts
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
 
+        NavMeshAgent agent;
+
         private bool _performingAction
         {
             get
@@ -69,6 +71,8 @@ namespace Assets.Scripts
         [OnAwake]
         public void PlayerAwake()
         {
+            agent = GetComponent<NavMeshAgent>();
+
             _target = target;
             //walk = new WalkTowardTargetAction(this, 5.0f);
             //attack = new MeleeAttackAction(this, hurtbox, 0.0f, "Enemy");
@@ -96,6 +100,20 @@ namespace Assets.Scripts
         [OnUpdate]
         public void PlayerUpdate()
         {
+            //for testing
+            if (Input.GetButtonDown("Fire1"))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, 100f, wallMask))
+                {
+                    preTapLocation = hit.point;
+                    PostTapAction();
+                }
+
+            }
+
             //If touch doesn't touch an enemy
             //And top of Queue is move
             // Clear Queue and Queue up move
@@ -349,7 +367,47 @@ namespace Assets.Scripts
             }
             else // Touch was not an enemy
             {
+                
+                //target.transform.position = preTapLocation;
+                //target.GetComponent<Cursor>().PlayPart();
+                //agent.SetDestination(target.transform.position);
+
                 if (_performingAttack)
+                {
+                    Debug.Log("Queue wait then, New Walk to point");
+
+                    _target = target;
+                    _target.transform.position = preTapLocation;
+                    _target.GetComponent<Cursor>().PlayPart();
+
+                    nextAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
+                    {
+                        Entity = this,
+                        Target = target.GetComponent<BaseEntity>(),
+                        MovementSpeed = 5.0f,
+                        GraceRange = 0.3f
+                    });
+                }
+                else
+                {
+                    Debug.Log("Queue New Walk to point");
+                    ClearActions();
+
+                    _target = target;
+                    _target.transform.position = preTapLocation;
+                    _target.GetComponent<Cursor>().PlayPart();
+
+                    currentAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
+                    {
+                        Entity = this,
+                        Target = target.GetComponent<BaseEntity>(),
+                        MovementSpeed = 5.0f,
+                        GraceRange = 0.3f
+                    });
+                }
+
+
+                /*if (_performingAttack)
                 {
                     Debug.Log("Queue wait then, New Walk to point");
                     nextAction = new WalkTowardTargetAction(new WalkTowardTargetActionParameters
@@ -377,7 +435,7 @@ namespace Assets.Scripts
                     _target = target;
                     _target.transform.position = preTapLocation;
                     _target.GetComponent<Cursor>().PlayPart();
-                }
+                }*/
             }
         }
 
