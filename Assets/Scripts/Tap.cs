@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Tap
+    public class Tap : BaseTouch
     {
+        public Tap()
+        {
+            TouchType = TouchType.Tap;
+        }
 
+        public Vector3 Location { get; set; }
+        public GameObject TappedEntity { get; set; }
     }
 }
