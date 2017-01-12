@@ -33,7 +33,7 @@ namespace Assets.Scripts
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
 
-        NavMeshAgent agent;
+        UnityEngine.AI.NavMeshAgent agent;
 
         private bool _performingAction
         {
@@ -71,7 +71,7 @@ namespace Assets.Scripts
         [OnAwake]
         public void PlayerAwake()
         {
-            agent = GetComponent<NavMeshAgent>();
+            agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
             _target = target;
             //walk = new WalkTowardTargetAction(this, 5.0f);

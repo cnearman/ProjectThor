@@ -13,7 +13,7 @@ namespace Assets.Scripts
 
         private float GraceRange = 1.0f;
 
-        private NavMeshAgent agent;
+        private UnityEngine.AI.NavMeshAgent agent;
 
         public BaseEntity target { get; set; }
 
@@ -29,7 +29,7 @@ namespace Assets.Scripts
             MovementSpeed = parameters.MovementSpeed;
             target = parameters.Target;
             GraceRange = parameters.GraceRange;
-            agent = parameters.Entity.GetComponent<NavMeshAgent>();
+            agent = parameters.Entity.GetComponent<UnityEngine.AI.NavMeshAgent>();
 
             agent.SetDestination(target.transform.position);
             IsCompleted = true;
