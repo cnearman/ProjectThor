@@ -36,7 +36,7 @@ namespace Assets.Scripts
             trainers = new Gesture[] { rCircle };
         }
 
-        public void ProcessPoints(IEnumerable<Point> points, IList<BaseTouch> touches, Point firstPoint, Point lastPoint)
+        public BaseTouch ProcessPoints(IEnumerable<Point> points, Point firstPoint, Point lastPoint)
         {
             bool isTap = true;
             foreach (Point p in points)
@@ -51,11 +51,11 @@ namespace Assets.Scripts
 
             if (isTap)
             {
-                touches.Add(new Tap()
+                return new Tap()
                 {
                     Location = firstPoint.metadata.Location,
                     TappedEntity = firstPoint.metadata.TappedEntity
-                });
+                };
             }
             else // Not Tap
             {
@@ -71,15 +71,15 @@ namespace Assets.Scripts
 
                 if (nameOfShape == "aCircle")
                 {
-                    touches.Add(new CircleGesture());
+                    return new CircleGesture();
                 }
-                else if (nameOfShape == "tLine")
+                else /*if (nameOfShape == "tLine") */
                 {
-                    touches.Add(new LineGesture()
+                    return new LineGesture()
                     {
                             StartingPoint = new Vector3(firstPoint.X, firstPoint.Y, 0f),
                             EndingPoint = new Vector3(lastPoint.X, lastPoint.Y, 0f)
-                    });
+                    };
                 }
             }
         }
