@@ -30,5 +30,12 @@ public class MenuFuntions : MonoBehaviour {
         {
             SceneManager.LoadScene("map");
         }
+        else if (level == 5)
+        {
+            SceneManager.LoadScene("LevelSelect");
+        } else if(level == 6)
+        {
+            SceneManager.LoadScene("MobTesting");
+        }
     }
 }

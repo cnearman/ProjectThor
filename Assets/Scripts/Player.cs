@@ -3,11 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts
 {
     public class Player : BaseEntity, Damagable
     {
+        public bool testingLevel;
+        public float abMod;
+        public float attackBuffer;
+        public float attackSpeed;
+        public float attackCooldown;
+        public float currentAttackCooldown;
+
         List<Point> currentPoints = new List<Point>();
         Point firstPoint;
         Gesture[] trainers;
@@ -71,6 +79,8 @@ namespace Assets.Scripts
         [OnAwake]
         public void PlayerAwake()
         {
+            attackBuffer = Screen.height / abMod;
+
             agent = GetComponent<NavMeshAgent>();
 
             _target = target;
@@ -101,7 +111,7 @@ namespace Assets.Scripts
         public void PlayerUpdate()
         {
             //for testing
-            if (Input.GetButtonDown("Fire1"))
+            /*if (Input.GetButtonDown("Fire1"))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
@@ -112,6 +122,29 @@ namespace Assets.Scripts
                     PostTapAction();
                 }
 
+            }
+
+            if(Input.GetButtonDown("Fire2"))
+            {
+                if (!isAttacking && currentAttackCooldown <= 0f)
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+
+                    if (Physics.Raycast(ray, out hit, 100f, wallMask))
+                    {
+                        
+                    }
+
+                    currentAttackCooldown = attackCooldown;
+                    isAttacking = true;
+                    StartAttack(new Vector3(hit.point.x, 1f, hit.point.z));
+                }
+            }*/
+
+            if(currentAttackCooldown > 0f)
+            {
+                currentAttackCooldown -= Time.deltaTime;
             }
 
             //If touch doesn't touch an enemy
@@ -129,103 +162,111 @@ namespace Assets.Scripts
                 thirdAction = null;
             }
 
-            foreach (Touch currentTouches in Input.touches)
+            if (testingLevel)
             {
-                if (currentTouches.phase == TouchPhase.Began)
+                TestUpdate();
+            }
+            else
+            {
+
+                foreach (Touch currentTouches in Input.touches)
                 {
-                    currentPoints.Clear();
-                    Point cPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
-                    currentPoints.Add(cPoint);
-                    firstPoint = cPoint;
-
-                    var ray = Camera.main.ScreenPointToRay(currentTouches.position);
-                    PreTapAction(ray);
-                }
-                else if (currentTouches.phase == TouchPhase.Ended)
-                {
-
-                    Point cPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
-                    currentPoints.Add(cPoint);
-
-                    bool isTap = true;
-
-                    //do tap test
-                    Point lastPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
-                    foreach (Point p in currentPoints)
+                    if (currentTouches.phase == TouchPhase.Began)
                     {
-                        if (Geometry.EuclideanDistance(p, lastPoint) > tapGrace)
-                        {
-                            Debug.Log("Not a tap");
-                            isTap = false;
-                            break;
-                        }
+                        currentPoints.Clear();
+                        Point cPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
+                        currentPoints.Add(cPoint);
+                        firstPoint = cPoint;
+
+                        var ray = Camera.main.ScreenPointToRay(currentTouches.position);
+                        PreTapAction(ray);
                     }
-
-                    if (isTap)
+                    else if (currentTouches.phase == TouchPhase.Ended)
                     {
-                        //var rayT = Camera.main.ScreenPointToRay(new Vector3(lastPoint.X, lastPoint.Y, 0f));
 
-                        PostTapAction();
+                        Point cPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
+                        currentPoints.Add(cPoint);
+
+                        bool isTap = true;
+
+                        //do tap test
+                        Point lastPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
+                        foreach (Point p in currentPoints)
+                        {
+                            if (Geometry.EuclideanDistance(p, lastPoint) > tapGrace)
+                            {
+                                Debug.Log("Not a tap");
+                                isTap = false;
+                                break;
+                            }
+                        }
+
+                        if (isTap)
+                        {
+                            //var rayT = Camera.main.ScreenPointToRay(new Vector3(lastPoint.X, lastPoint.Y, 0f));
+
+                            PostTapAction();
+                        }
+                        else
+                        {
+                            Point[] tempLine = { firstPoint, lastPoint };
+                            Gesture lineGesture = new Gesture(tempLine, "tLine");
+
+                            Gesture[] tempTrainers = { trainers[0], lineGesture };
+
+                            //send to PDollar
+                            Point[] pointArray = currentPoints.ToArray();
+                            Gesture myGesture = new Gesture(pointArray);
+                            string nameOfShape = PointCloudRecognizer.Classify(myGesture, tempTrainers);
+
+                            if (nameOfShape == "aCircle")
+                            {
+
+                                GameObject currentHC = (GameObject)Instantiate(ouchCircle, transform.position, transform.rotation);
+
+                                currentHC.transform.position = transform.position;
+                                currentHC.transform.parent = transform;
+                            }
+                            else if (nameOfShape == "tLine")
+                            {
+                                Debug.Log("Line");
+                                var ray1 = Camera.main.ScreenPointToRay(new Vector3(firstPoint.X, firstPoint.Y, 0f));
+                                var ray2 = Camera.main.ScreenPointToRay(new Vector3(lastPoint.X, lastPoint.Y, 0f));
+
+                                RaycastHit hit1;
+                                RaycastHit hit2;
+                                Vector3 pos1 = new Vector3();
+                                Vector3 pos2 = new Vector3();
+                                if (Physics.Raycast(ray1, out hit1, 100f, wallMask))
+                                {
+                                    pos1 = hit1.point;
+                                }
+
+                                if (Physics.Raycast(ray2, out hit2, 100f, wallMask))
+                                {
+                                    pos2 = hit2.point;
+                                }
+                                if (new Vector3(pos1.x - transform.position.x, 0, pos1.z - transform.position.z).magnitude <= dashStartingGrace)
+                                {
+                                    ClearActions();
+                                    currentAction = new DashAction(
+                                        new DashActionParameters
+                                        {
+                                            Entity = this,
+                                            DashDamage = 30,
+                                            DashRange = 10.0f,
+                                            Target = new Vector3(pos2.x, transform.position.y, pos2.z),
+                                            Tags = new List<string> { "Enemy" }
+                                        });
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        Point[] tempLine = { firstPoint, lastPoint };
-                        Gesture lineGesture = new Gesture(tempLine, "tLine");
-
-                        Gesture[] tempTrainers = { trainers[0], lineGesture };
-
-                        //send to PDollar
-                        Point[] pointArray = currentPoints.ToArray();
-                        Gesture myGesture = new Gesture(pointArray);
-                        string nameOfShape = PointCloudRecognizer.Classify(myGesture, tempTrainers);
-
-                        if (nameOfShape == "aCircle")
-                        {
-
-                            GameObject currentHC = (GameObject)Instantiate(ouchCircle, transform.position, transform.rotation);
-
-                            currentHC.transform.position = transform.position;
-                            currentHC.transform.parent = transform;
-                        }
-                        else if(nameOfShape == "tLine")
-                        {
-                            Debug.Log("Line");
-                            var ray1 = Camera.main.ScreenPointToRay(new Vector3(firstPoint.X, firstPoint.Y, 0f));
-                            var ray2 = Camera.main.ScreenPointToRay(new Vector3(lastPoint.X, lastPoint.Y, 0f));
-
-                            RaycastHit hit1;
-                            RaycastHit hit2;
-                            Vector3 pos1 = new Vector3();
-                            Vector3 pos2 = new Vector3();
-                            if (Physics.Raycast(ray1, out hit1, 100f, wallMask))
-                            {
-                                pos1 = hit1.point;
-                            }
-
-                            if (Physics.Raycast(ray2, out hit2, 100f, wallMask))
-                            {
-                                pos2 = hit2.point;
-                            }
-                            if (new Vector3(pos1.x - transform.position.x, 0 , pos1.z - transform.position.z).magnitude <= dashStartingGrace)
-                            {
-                                ClearActions();
-                                currentAction = new DashAction(
-                                    new DashActionParameters
-                                    {
-                                        Entity = this,
-                                        DashDamage = 30,
-                                        DashRange = 10.0f,
-                                        Target = new Vector3(pos2.x, transform.position.y, pos2.z),
-                                        Tags = new List<string> { "Enemy" }
-                                    });
-                            }
-                        }
+                        Point cPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
+                        currentPoints.Add(cPoint);
                     }
-                }
-                else
-                {
-                    Point cPoint = new Point(currentTouches.position.x, currentTouches.position.y, 0);
-                    currentPoints.Add(cPoint);
                 }
             }
 
@@ -235,6 +276,100 @@ namespace Assets.Scripts
                 currentAction.PerformAction();
             }
         }
+
+        Dictionary<int, Vector2> touchDict = new Dictionary<int, Vector2>();
+        public bool isAttacking;
+        public GameObject myWeapon;
+
+        void TestUpdate()
+        {
+            foreach (Touch myTouches in Input.touches)
+            {
+                if (touchDict.ContainsKey(myTouches.fingerId))
+                {
+                    if (myTouches.phase == TouchPhase.Ended)
+                    {
+                        RaycastHit hit;
+
+                        bool nogo = false;
+
+                        var ray = Camera.main.ScreenPointToRay(myTouches.position);
+
+                        if (Physics.Raycast(ray, out hit, 100f, wallMask))
+                        {
+                            preTapLocation = hit.point;
+                        }
+
+                        Vector2 totDelta = new Vector2(myTouches.position.x - touchDict[myTouches.fingerId].x, myTouches.position.y - touchDict[myTouches.fingerId].y);
+                        float mag = totDelta.magnitude;
+
+                        if (!isAttacking && currentAttackCooldown <= 0f)
+                        {
+                            if (Mathf.Abs(mag) > attackBuffer)
+                            {
+                                isAttacking = true;
+                                nogo = true;
+                                currentAttackCooldown = attackCooldown;
+                                StartAttack(preTapLocation);
+                            }
+                            
+                        }
+
+                        if (!nogo)
+                        {
+                            PostTapAction();
+                        }
+
+
+                        touchDict.Remove(myTouches.fingerId);
+                    }
+                }
+                else
+                {
+                    touchDict.Add(myTouches.fingerId, myTouches.position);
+                }
+            }
+
+            if(isAttacking)
+            {
+                currentAngle += Time.deltaTime * attackSpeed;
+                myWeapon.transform.RotateAround(transform.position, transform.up, -Time.deltaTime * attackSpeed);
+
+                if (currentAngle > 180f)
+                {
+                    isAttacking = false;
+                    myWeapon.SetActive(false);
+                    agent.ResetPath();
+                    agent.Resume();
+                    /*
+                    DoDamage();
+                    currentAngle = 0f;
+                    weapon.transform.localEulerAngles = new Vector3(0f, 0f, 180f);
+                    weapon.transform.localPosition = new Vector3(0f, 0f, 0.75f);
+                    attacking = false;
+                    coolDown = true;
+                    */
+                }
+            }
+        }
+
+        float currentAngle;
+
+        public AudioSource swordSwipe;
+
+        void StartAttack(Vector3 pos)
+        {
+            agent.Stop();
+            transform.LookAt(pos);
+            myWeapon.transform.localEulerAngles = new Vector3(0f, -90f, 0f);
+
+            currentAngle = 0f;
+
+            swordSwipe.Play();
+
+            myWeapon.SetActive(true);
+        }
+
 
         void HurtCircle(Ray origin, Ray rad)
         {
@@ -449,6 +584,28 @@ namespace Assets.Scripts
             currentAction = null;
             nextAction = null;
         }
+
+        string currentPromptedLevel;
+        public GameObject levelPrompter;
+
+        public void PromptLevel(string lvl)
+        {
+            currentPromptedLevel = lvl;
+            levelPrompter.SetActive(true);
+        }
+
+        public void LoadPromptedLevel()
+        {
+            SceneManager.LoadScene(currentPromptedLevel);
+        }
+
+        public void CancelPromptedLevel()
+        {
+            currentPromptedLevel = null;
+            levelPrompter.SetActive(false);
+
+        }
+
 
     }
 }
