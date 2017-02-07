@@ -114,7 +114,7 @@ namespace Assets.Scripts
         public void PlayerUpdate()
         {
             //for testing
-            /*if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Fire1"))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
@@ -126,7 +126,7 @@ namespace Assets.Scripts
                 }
 
             }
-
+            /*
             if(Input.GetButtonDown("Fire2"))
             {
                 if (!isAttacking && currentAttackCooldown <= 0f)
@@ -286,48 +286,51 @@ namespace Assets.Scripts
 
         void TestUpdate()
         {
-            foreach (Touch myTouches in Input.touches)
+            if (!isAttacking)
             {
-                if (touchDict.ContainsKey(myTouches.fingerId))
+                foreach (Touch myTouches in Input.touches)
                 {
-                    if (myTouches.phase == TouchPhase.Ended)
+                    if (touchDict.ContainsKey(myTouches.fingerId))
                     {
-                        RaycastHit hit;
-
-                        var ray = Camera.main.ScreenPointToRay(myTouches.position);
-
-                        if (Physics.Raycast(ray, out hit, 100f))
+                        if (myTouches.phase == TouchPhase.Ended)
                         {
-                            preTapLocation = hit.point;
+                            RaycastHit hit;
+
+                            var ray = Camera.main.ScreenPointToRay(myTouches.position);
+
+                            if (Physics.Raycast(ray, out hit, 100f))
+                            {
+                                preTapLocation = hit.point;
+                            }
+                            //
+                            //Vector2 totDelta = new Vector2(myTouches.position.x - touchDict[myTouches.fingerId].x, myTouches.position.y - touchDict[myTouches.fingerId].y);
+                            //float mag = totDelta.magnitude;
+
+                            if (!isAttacking && (hit.collider.gameObject.tag == "Enemy"))
+                            {
+                                AttackQueued = true;
+                                currentTargetEnemy = hit.collider.gameObject;
+
+                                //isAttacking = true;
+                                //nogo = true;
+                                //currentAttackCooldown = attackCooldown;
+                                //StartAttack(preTapLocation);                           
+                            }
+                            else
+                            {
+                                AttackQueued = false;
+                                PostTapAction();
+                            }
+
+
+
+                            touchDict.Remove(myTouches.fingerId);
                         }
-                        //
-                        //Vector2 totDelta = new Vector2(myTouches.position.x - touchDict[myTouches.fingerId].x, myTouches.position.y - touchDict[myTouches.fingerId].y);
-                        //float mag = totDelta.magnitude;
-
-                        if (!isAttacking && (hit.collider.gameObject.tag == "Enemy"))
-                        {
-                            AttackQueued = true;
-                            currentTargetEnemy = hit.collider.gameObject;
-
-                            //isAttacking = true;
-                            //nogo = true;
-                            //currentAttackCooldown = attackCooldown;
-                            //StartAttack(preTapLocation);                           
-                        }
-                        else
-                        {
-                            AttackQueued = false;
-                            PostTapAction();
-                        }
-
-
-
-                        touchDict.Remove(myTouches.fingerId);
                     }
-                }
-                else
-                {
-                    touchDict.Add(myTouches.fingerId, myTouches.position);
+                    else
+                    {
+                        touchDict.Add(myTouches.fingerId, myTouches.position);
+                    }
                 }
             }
 

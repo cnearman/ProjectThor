@@ -29,7 +29,7 @@ public class GoalTroll : MonoBehaviour {
     {
         SuperDoor.SetActive(true);
         theLight.intensity = 0;
-        Instantiate(boss, new Vector3(-15f,3f,-30f), transform.rotation);
+        Instantiate(boss, new Vector3(-24f,1f,-11f), transform.rotation);
         Destroy(gameObject);
     }
 }

@@ -37,8 +37,8 @@ public class BossCode : MonoBehaviour {
 
         agent = GetComponent<NavMeshAgent>();
 
-        startX = -9f;
-        startZ = -26f;
+        startX = -24f;
+        startZ = -11f;
     }
 
     // Update is called once per frame
@@ -57,14 +57,18 @@ public class BossCode : MonoBehaviour {
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        Instantiate(bully, new Vector3(-20f, 1f, -26f + Random.Range(-5, 5)), Quaternion.Euler(0f, 90f, 0f));
+                        var range = Random.Range(0, 9) + 1;
+                        var instance = (GameObject)Instantiate(bully, new Vector3(-25.66f, 0.5f, -1.25f) + new Vector3((-14.18f - (-25.66f)) * (range / 10.0f), 0.5f, (-11.25f - -1.25f) * (range / 10.0f)), Quaternion.identity);
+                        instance.transform.forward = new Vector3(-35.4f, 0.5f, -11.25f) - new Vector3(-25.66f, 0.5f, -1.25f);
                     }
                 }
                 else
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        Instantiate(bully, new Vector3(-9f + Random.Range(-5, 5), 1f, -35f), Quaternion.Euler(0f, 0f, 0f));
+                        var range = Random.Range(0, 9) + 1;
+                        var instance = (GameObject)Instantiate(bully, new Vector3(-25.66f, 0.5f, -1.25f) + new Vector3((-35.4f - (-25.66f)) * (range / 10.0f), 0.5f, (-11.25f - -1.25f) * (range / 10.0f)), Quaternion.identity);
+                        instance.transform.forward = new Vector3(-14.18f, 0.5f, -12.73f) - new Vector3(-25.66f, 0.5f, -1.25f);
                     }
                 }
             } else
@@ -73,14 +77,18 @@ public class BossCode : MonoBehaviour {
                 {
                     for (int i = 0; i < 1; i++)
                     {
-                        Instantiate(bully, new Vector3(-20f, 1f, -26f + Random.Range(-5, 5)), Quaternion.Euler(0f, 90f, 0f));
+                        var range = Random.Range(0, 9) + 1;
+                        var instance = (GameObject) Instantiate(bully, new Vector3(-25.66f, 0.5f, -1.25f) + new Vector3((-14.18f - (-25.66f)) * (range / 10.0f), 0.5f, (-11.25f - -1.25f) * (range / 10.0f)), Quaternion.identity);
+                        instance.transform.forward = new Vector3(-35.4f, 0.5f, -11.25f) - new Vector3(-25.66f, 0.5f, -1.25f);
                     }
                 }
                 else
                 {
                     for (int i = 0; i < 1; i++)
                     {
-                        Instantiate(bully, new Vector3(-9f + Random.Range(-5, 5), 1f, -35f), Quaternion.Euler(0f, 0f, 0f));
+                        var range = Random.Range(0, 9) + 1;
+                        var instance = (GameObject) Instantiate(bully, new Vector3(-25.66f, 0.5f, -1.25f) + new Vector3((-35.4f - (-25.66f)) * (range / 10.0f), 0.5f, (-11.25f - -1.25f) * (range / 10.0f)), Quaternion.identity);
+                        instance.transform.forward = new Vector3(-14.18f, 0.5f, -12.73f) - new Vector3(-25.66f, 0.5f, -1.25f);
                     }
                 }
             }
