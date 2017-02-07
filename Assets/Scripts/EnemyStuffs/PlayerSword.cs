@@ -15,18 +15,9 @@ public class PlayerSword : MonoBehaviour {
 	
 	}
 
-    void OnTriggerEnter(Collider other)
+    public void MakeItSplat(Vector3 pos)
     {
-        if (other.gameObject.tag == "Enemy")
-        {
-
-            Instantiate(bloodHit, other.gameObject.transform.position, other.gameObject.transform.rotation);
-            other.gameObject.GetComponent<EHealth>().health -= 1;
-        }
-        if (other.gameObject.tag == "Boss")
-        {
-            Instantiate(bloodHit, other.gameObject.transform.position, other.gameObject.transform.rotation);
-            other.gameObject.GetComponent<BHealth>().health -= 1;
-        }
+        Debug.Log("It's SPLATTIN");
+        Instantiate(bloodHit, pos, Quaternion.identity);
     }
 }

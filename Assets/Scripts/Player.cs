@@ -37,6 +37,9 @@ namespace Assets.Scripts
         public Action thirdAction;
 
         public float dashStartingGrace = 2.0f;
+        public bool AttackQueued = false;
+        private GameObject currentTargetEnemy;
+        private float maxAttackDistance = 1.5f;
 
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
@@ -291,34 +294,32 @@ namespace Assets.Scripts
                     {
                         RaycastHit hit;
 
-                        bool nogo = false;
-
                         var ray = Camera.main.ScreenPointToRay(myTouches.position);
 
-                        if (Physics.Raycast(ray, out hit, 100f, wallMask))
+                        if (Physics.Raycast(ray, out hit, 100f))
                         {
                             preTapLocation = hit.point;
                         }
+                        //
+                        //Vector2 totDelta = new Vector2(myTouches.position.x - touchDict[myTouches.fingerId].x, myTouches.position.y - touchDict[myTouches.fingerId].y);
+                        //float mag = totDelta.magnitude;
 
-                        Vector2 totDelta = new Vector2(myTouches.position.x - touchDict[myTouches.fingerId].x, myTouches.position.y - touchDict[myTouches.fingerId].y);
-                        float mag = totDelta.magnitude;
-
-                        if (!isAttacking && currentAttackCooldown <= 0f)
+                        if (!isAttacking && (hit.collider.gameObject.tag == "Enemy"))
                         {
-                            if (Mathf.Abs(mag) > attackBuffer)
-                            {
-                                isAttacking = true;
-                                nogo = true;
-                                currentAttackCooldown = attackCooldown;
-                                StartAttack(preTapLocation);
-                            }
-                            
+                            AttackQueued = true;
+                            currentTargetEnemy = hit.collider.gameObject;
+
+                            //isAttacking = true;
+                            //nogo = true;
+                            //currentAttackCooldown = attackCooldown;
+                            //StartAttack(preTapLocation);                           
                         }
-
-                        if (!nogo)
+                        else
                         {
+                            AttackQueued = false;
                             PostTapAction();
                         }
+
 
 
                         touchDict.Remove(myTouches.fingerId);
@@ -341,6 +342,9 @@ namespace Assets.Scripts
                     myWeapon.SetActive(false);
                     agent.ResetPath();
                     agent.Resume();
+                    var pos = currentTargetEnemy.transform.position;
+                    myWeapon.GetComponentInChildren<PlayerSword>().MakeItSplat(pos);
+                    currentTargetEnemy.GetComponent<EHealth>().health--;
                     /*
                     DoDamage();
                     currentAngle = 0f;
@@ -351,6 +355,22 @@ namespace Assets.Scripts
                     */
                 }
             }
+
+            if (AttackQueued)
+            {
+                if (Vector3.Magnitude(transform.position - currentTargetEnemy.transform.position) < maxAttackDistance)
+                {
+                    isAttacking = true;
+                    currentAttackCooldown = attackCooldown;
+                    StartAttack(currentTargetEnemy.transform.position);
+                    AttackQueued = false;
+                }
+                else
+                {
+                    agent.SetDestination(currentTargetEnemy.transform.position);
+                }
+            }
+
         }
 
         float currentAngle;
