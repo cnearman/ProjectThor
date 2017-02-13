@@ -109,12 +109,11 @@ namespace Assets.Scripts
 
             Gesture rCircle = new Gesture(circlePoints.ToArray(), "aCircle");
 
-            List<Point> vUpPoints = new List<Point> { new Point(-10,-10, 0), new Point(0, 10, 0), new Point(10, -10, 0)};
+            List<Point> pointyguyspleasework = new List<Point>() { new Point(-10, -10, 0), new Point(0, 10, 0), new Point(10, -10, 0) };
 
-            Gesture vUp = new Gesture(vUpPoints.ToArray(), "aVUp");
-            trainers = new Gesture[] { rCircle, vUp };
+            Gesture carrotman = new Gesture(pointyguyspleasework.ToArray(), "Carrotman");
 
-
+            trainers = new Gesture[] { rCircle, carrotman };
         }
 
         [OnUpdate]
@@ -222,7 +221,7 @@ namespace Assets.Scripts
                             Point[] tempLine = { firstPoint, lastPoint };
                             Gesture lineGesture = new Gesture(tempLine, "tLine");
 
-                            Gesture[] tempTrainers = { trainers[0], lineGesture };
+                            Gesture[] tempTrainers = { trainers[0], trainers[1]/*, lineGesture*/ };
 
                             //send to PDollar
                             Point[] pointArray = currentPoints.ToArray();
@@ -299,20 +298,13 @@ namespace Assets.Scripts
         {
             if (!isAttacking)
             {
-                //TODO: FIX Bug where you have to tap twice in order to move.
                 //TODO: look into why you can't get VUP to work properly.
                 foreach (Touch myTouches in Input.touches)
                 {
+                    // On First touch (TouchPhase.Began), this will be false
                     if (touchDict.ContainsKey(myTouches.fingerId))
                     {
-                        if (myTouches.phase == TouchPhase.Began)
-                        {
-                            currentPoints.Clear();
-                            Point cPoint = new Point(myTouches.position.x, myTouches.position.y, 0);
-                            currentPoints.Add(cPoint);
-                            firstPoint = cPoint;
-                        }
-                        else if (myTouches.phase == TouchPhase.Ended)
+                        if (myTouches.phase == TouchPhase.Ended)
                         {
                             Point cPoint = new Point(myTouches.position.x, myTouches.position.y, 0);
                             currentPoints.Add(cPoint);
@@ -352,14 +344,13 @@ namespace Assets.Scripts
                                     PostTapAction();
                                 }
                                 inputType.text = "TAP";
-                                touchDict.Remove(myTouches.fingerId);
                             }
                             else
                             {
                                 Point[] tempLine = { firstPoint, lastPoint };
                                 Gesture lineGesture = new Gesture(tempLine, "tLine");
 
-                                Gesture[] tempTrainers = { trainers[0], trainers[1], lineGesture };
+                                Gesture[] tempTrainers = {trainers[0], trainers[1]/*, lineGesture*/ };
 
                                 //send to PDollar
                                 Point[] pointArray = currentPoints.ToArray();
@@ -386,34 +377,44 @@ namespace Assets.Scripts
                                     Vector3 pos2 = new Vector3();
                                     if (Physics.Raycast(ray1, out hit1, 100f, wallMask))
                                     {
-                                        pos1 = hit1.point;
+                                        // if (hit1.collider.gameObject is typeof();
+                                        // if hits the player then good, we can keep going
+                                        // otherwise we're done here
+                                        if (hit1.collider.CompareTag("Player"))
+                                        {
+                                            pos1 = hit1.point;
+                                            if (Physics.Raycast(ray2, out hit2, 100f, wallMask))
+                                            {
+                                                pos2 = hit2.point;
+                                            }
+                                            if (new Vector3(pos1.x - transform.position.x, 0, pos1.z - transform.position.z).magnitude <= dashStartingGrace)
+                                            {
+                                                ClearActions();
+                                                currentAction = new DashAction(
+                                                    new DashActionParameters
+                                                    {
+                                                        Entity = this,
+                                                        DashDamage = 30,
+                                                        DashRange = 10.0f,
+                                                        Target = new Vector3(pos2.x, transform.position.y, pos2.z),
+                                                        Tags = new List<string> { "Enemy" }
+                                                    });
+                                            }
+                                        }
                                     }
 
-                                    if (Physics.Raycast(ray2, out hit2, 100f, wallMask))
-                                    {
-                                        pos2 = hit2.point;
-                                    }
-                                    if (new Vector3(pos1.x - transform.position.x, 0, pos1.z - transform.position.z).magnitude <= dashStartingGrace)
-                                    {
-                                        ClearActions();
-                                        currentAction = new DashAction(
-                                            new DashActionParameters
-                                            {
-                                                Entity = this,
-                                                DashDamage = 30,
-                                                DashRange = 10.0f,
-                                                Target = new Vector3(pos2.x, transform.position.y, pos2.z),
-                                                Tags = new List<string> { "Enemy" }
-                                            });
-                                    }*/
+                                    */
                                     inputType.text = "Line";
                                 }
-                                else if (nameOfShape == "aVUp")
+                                else if (nameOfShape == "Carrotman")
                                 {
-                                    gameObject.GetComponent<EHealth>().health++;
                                     inputType.text = "V Up";
+                                    gameObject.GetComponent<Healths>().health++;
                                 }
+                                inputType.text = nameOfShape;
                             }
+
+                            touchDict.Remove(myTouches.fingerId);
                         }
                         else
                         {
@@ -423,9 +424,11 @@ namespace Assets.Scripts
                     }
                     else
                     {
-                        touchDict.Add(myTouches.fingerId, myTouches.position);
+                        currentPoints.Clear();
                         Point cPoint = new Point(myTouches.position.x, myTouches.position.y, 0);
                         currentPoints.Add(cPoint);
+                        firstPoint = cPoint;
+                        touchDict.Add(myTouches.fingerId, myTouches.position);
                     }
                 }
             }
