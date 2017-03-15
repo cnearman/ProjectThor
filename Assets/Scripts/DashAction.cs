@@ -14,11 +14,13 @@ namespace Assets.Scripts
         private float DashDamage = 0.0f;
 
         private Vector3 Target = Vector3.zero;
+        private NavMeshAgent agent;
         public List<string> Tags = new List<string> { };
 
         public DashAction(DashActionParameters parameters)
         {
             _rigidbody = parameters.Entity.GetComponent<Rigidbody>();
+            agent = parameters.Entity.GetComponent<NavMeshAgent>();
             DashRange = parameters.DashRange;
             DashDamage = parameters.DashDamage;
             Target = parameters.Target;
@@ -28,6 +30,7 @@ namespace Assets.Scripts
         public override void PerformAction()
         {
             IsCompleted = false;
+            agent.ResetPath();
             Debug.Log("Dash");
             var hits = Physics.RaycastAll(_rigidbody.transform.position, Target - _rigidbody.transform.position, DashRange);
             foreach ( var hit in hits)
@@ -47,6 +50,7 @@ namespace Assets.Scripts
             _rigidbody.MovePosition(Target);
 
             IsCompleted = true;
+            agent.Resume();
         }
     }
 }

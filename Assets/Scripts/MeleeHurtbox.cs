@@ -10,7 +10,7 @@ namespace Assets.Scripts
     {
         public System.Action CleanupMethod;
         public float Lifespan = 2.0f;
-        private float _damageValue = 40;
+        private float _damageValue = 2;
         public List<string> Tags;
 
         [OnAwake]
