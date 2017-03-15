@@ -120,7 +120,7 @@ namespace Assets.Scripts
         public void PlayerUpdate()
         {
             //for testing
-            /*if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Fire1"))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
@@ -149,7 +149,7 @@ namespace Assets.Scripts
                     isAttacking = true;
                     StartAttack(new Vector3(hit.point.x, 1f, hit.point.z));
                 }
-            }*/
+            }
 
             if(currentAttackCooldown > 0f)
             {

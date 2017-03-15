@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class UrukHai : MonoBehaviour {
+public class UrukHai : BaseEnemyMob {
+    public float moveSpeedPatrol;
+    public float moveSpeedHighAlert;
+    public float moveSpeedMoveToAttack;
+    public float moveSpeedPrepareNextAttack;
+
     public AudioSource swiper;
 
     public float patrolRange;
@@ -10,122 +15,101 @@ public class UrukHai : MonoBehaviour {
 
     public float patrolUpdate;
     float currentPatrolUpdate;
-
-    public float angerRange;
-    public float walkSpeed;
-    public float chaseSpeed;
-    public float attackDistance;
-    public bool attacking;
-
-    public bool warmUp;
-    public float warmUpTime;
-    public float currentWarmUp;
-
-    public bool recover;
-    public float recoverTime;
-    public float currentRecover;
-
-    public bool coolDown;
-    public float attackCooldown;
-    public float currentCooldown;
+    
     public GameObject weapon;
 
     public float attackSpeed;
     public float pullBackSpeed;
 
     public GameObject testPlayer;
-
-    bool isAggro;
-
+    
     NavMeshAgent agent;
 
     public GameObject hurtBox;
     public float hurtTime;
 
-    int wallMask = 1 << 12;
+    public bool attacking;
+    public bool coolDown;
 
     // Use this for initialization
-    void Start () {
+    protected override void Start () {
         agent = GetComponent<NavMeshAgent>();
 
         startX = transform.position.x;
         startZ = transform.position.z;
 
         currentAngle = 0;
+
+        currentState = possibleState.Patrol;
+        currentTarget = GameObject.Find("Player");
     }
-	
-	// Update is called once per frame
-	void Update () {
-        
 
-
-        if (!isAggro)
+    protected override void Patrol()
+    {
+        agent.speed = moveSpeedPatrol;
+        if (currentPatrolUpdate < 0f)
         {
-            if (currentPatrolUpdate < 0f)
-            {
-                PickPatrolPosition();
+            PickPatrolPosition();
 
-                currentPatrolUpdate = patrolUpdate;
-            }
-            else
-            {
-                currentPatrolUpdate -= Time.deltaTime;
-            }
-
-            CheckAggro(testPlayer);
-        } else
-        {
-            
-            if (warmUp)
-            {
-                if(currentWarmUp > 0f)
-                {
-                    transform.LookAt(testPlayer.transform);
-                    currentWarmUp -= Time.deltaTime;
-                } else
-                {
-                    warmUp = false;
-                    attacking = true;
-                    swiper.Play();
-                }
-            } else if (coolDown)
-            {
-                PullBackWeapon();
-            } else if (recover)
-            {
-                if(currentRecover > 0f)
-                {
-                    agent.SetDestination(testPlayer.transform.position);
-                    currentRecover -= Time.deltaTime;
-                } else
-                {
-                    recover = false;
-                }
-            } else if(attacking)
-            {
-                AttackStuff();
-            } else
-            {
-                Vector3 tempDist = testPlayer.transform.position - transform.position;
-                float acDist = tempDist.magnitude;
-                if (acDist < attackDistance)
-                {
-                    agent.Stop();
-
-                    //transform.LookAt(testPlayer.transform);
-                    warmUp = true;
-                    currentWarmUp = warmUpTime;
-                }
-                else
-                {
-                    agent.SetDestination(testPlayer.transform.position);
-                }
-            }
-
-
-            
+            currentPatrolUpdate = patrolUpdate;
         }
-	}
+        else
+        {
+            currentPatrolUpdate -= Time.deltaTime;
+        }
+    }
+
+    protected override void MoveToAttack()
+    {
+        agent.speed = moveSpeedMoveToAttack;
+        agent.SetDestination(testPlayer.transform.position);
+    }
+
+    protected override void PoweringUp()
+    {
+        agent.Stop();
+        transform.LookAt(testPlayer.transform);
+    }
+
+    protected override void StartAttack()
+    {
+        attacking = true;
+    }
+
+    protected override void Attack()
+    {
+        if (coolDown)
+        {
+            PullBackWeapon();
+        }
+        else if (attacking)
+        {
+            AttackStuff();
+        }
+    }
+
+    protected override void PrepareNextAttack()
+    {
+        agent.speed = moveSpeedPrepareNextAttack;
+        agent.SetDestination(testPlayer.transform.position);
+    }
+
+    protected override void HighAlertAction()
+    {
+        agent.speed = moveSpeedHighAlert;
+
+        if (currentPatrolUpdate < 0f)
+        {
+            PickPatrolPosition();
+
+            currentPatrolUpdate = patrolUpdate;
+        }
+        else
+        {
+            currentPatrolUpdate -= Time.deltaTime;
+        }
+    }
+    
 
     void PickPatrolPosition()
     {
@@ -136,7 +120,6 @@ public class UrukHai : MonoBehaviour {
         pickZ += startZ;
 
         agent.SetDestination(new Vector3(pickX, 0.79f, pickZ));
-
     }
 
 
@@ -172,8 +155,6 @@ public class UrukHai : MonoBehaviour {
             weapon.transform.localPosition = new Vector3(0f, 0f, -1f);
             coolDown = false;
             agent.Resume();
-            recover = true;
-            currentRecover = recoverTime;
         }
     }
 
@@ -182,24 +163,5 @@ public class UrukHai : MonoBehaviour {
         hurtBox.SetActive(true);
         hurtBox.GetComponent<HurtMeGood>().cooldown = hurtTime;
     }
-
-    public void CheckAggro(GameObject target)
-    {
-        Vector3 tempDist = target.transform.position - transform.position;
-        float acDist = tempDist.magnitude;
-        
-
-        if (!(acDist > angerRange) && !Physics.Raycast(transform.position, target.transform.position - transform.position, acDist, wallMask))
-        {
-            Component halo = GetComponent("Halo");
-            halo.GetType().GetProperty("enabled").SetValue(halo, true, null);
-            isAggro = true;
-            agent.speed = chaseSpeed;
-        } /*else
-        {
-            Component halo = GetComponent("Halo");
-            halo.GetType().GetProperty("enabled").SetValue(halo, false, null);
-        }*/
-        
-    }
+    
 }
