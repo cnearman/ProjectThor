@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Assets.Scripts;
+using System;
 
-public class UrukHai : MonoBehaviour {
+public class UrukHai : BaseEntity, Damagable {
     public AudioSource swiper;
 
     public float patrolRange;
@@ -45,7 +47,8 @@ public class UrukHai : MonoBehaviour {
     int wallMask = 1 << 12;
 
     // Use this for initialization
-    void Start () {
+    [OnStart]
+    void UrukHaiStart () {
         agent = GetComponent<NavMeshAgent>();
 
         startX = transform.position.x;
@@ -55,7 +58,8 @@ public class UrukHai : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+    [OnUpdate]
+	void UrukHaiUpdate () {
         
 
 
@@ -129,8 +133,8 @@ public class UrukHai : MonoBehaviour {
 
     void PickPatrolPosition()
     {
-        float pickX = Random.Range(-patrolRange, patrolRange);
-        float pickZ = Random.Range(-patrolRange, patrolRange);
+        float pickX = UnityEngine.Random.Range(-patrolRange, patrolRange);
+        float pickZ = UnityEngine.Random.Range(-patrolRange, patrolRange);
 
         pickX += startX;
         pickZ += startZ;
@@ -201,5 +205,11 @@ public class UrukHai : MonoBehaviour {
             halo.GetType().GetProperty("enabled").SetValue(halo, false, null);
         }*/
         
+    }
+
+    public void ApplyDamage(float damage)
+    {
+        var health = GetComponent<EHealth>();
+        health.health -= (int) damage;
     }
 }
