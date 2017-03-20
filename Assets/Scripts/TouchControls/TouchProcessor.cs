@@ -8,7 +8,7 @@ namespace Assets.Scripts
 {
     public class TouchProcessor
     {
-        private readonly float TAP_GRACE = 0.002f; //Temporary, to be changed.
+        private float tapGrace = 0.002f; //Temporary, to be changed.
 
         private IList<Gesture> trainers;
 
@@ -19,6 +19,7 @@ namespace Assets.Scripts
 
         public void Initialize()
         {
+            tapGrace = Screen.height / 15f;
             List<Point> circlePoints = new List<Point>();
 
             for (float i = 0; i < 360f; i += 11.25f)
@@ -33,15 +34,19 @@ namespace Assets.Scripts
 
             Gesture rCircle = new Gesture(circlePoints.ToArray(), "aCircle");
 
-            trainers = new Gesture[] { rCircle };
+            // ArrowUpPoints
+            List<Point> arrowUpPoints = new List<Point>() { new Point(-10, -10, 0), new Point(0, 10, 0), new Point(10, -10, 0) };
+            Gesture arrowUp = new Gesture(arrowUpPoints.ToArray(), "aArrowUp");
+
+            trainers = new Gesture[] { rCircle, arrowUp };
         }
 
-        public void ProcessPoints(IEnumerable<Point> points, IList<BaseTouch> touches, Point firstPoint, Point lastPoint)
+        public BaseTouch ProcessPoints(IEnumerable<Point> points, Point firstPoint, Point lastPoint)
         {
             bool isTap = true;
             foreach (Point p in points)
             {
-                if (Geometry.EuclideanDistance(p, lastPoint) > TAP_GRACE)
+                if (Geometry.EuclideanDistance(p, lastPoint) > tapGrace)
                 {
                     Debug.Log("Not a tap");
                     isTap = false;
@@ -51,11 +56,11 @@ namespace Assets.Scripts
 
             if (isTap)
             {
-                touches.Add(new Tap()
+                return new Tap()
                 {
                     Location = firstPoint.metadata.Location,
                     TappedEntity = firstPoint.metadata.TappedEntity
-                });
+                };
             }
             else // Not Tap
             {
@@ -71,15 +76,19 @@ namespace Assets.Scripts
 
                 if (nameOfShape == "aCircle")
                 {
-                    touches.Add(new CircleGesture());
+                    return new CircleGesture();
                 }
                 else if (nameOfShape == "tLine")
                 {
-                    touches.Add(new LineGesture()
+                    return new LineGesture()
                     {
                             StartingPoint = new Vector3(firstPoint.X, firstPoint.Y, 0f),
                             EndingPoint = new Vector3(lastPoint.X, lastPoint.Y, 0f)
-                    });
+                    };
+                }
+                else
+                {
+                    throw new Exception("How did you fuck this up so badly");
                 }
             }
         }

@@ -12,7 +12,7 @@ public class LoadLevelTriggerConfirm : MonoBehaviour {
         if (other.gameObject.tag == "Player")
         {
             Debug.Log("enderting");
-            other.gameObject.GetComponent<Assets.Scripts.Player>().PromptLevel(sceneToLoad);
+            //other.gameObject.GetComponent<Assets.Scripts.Player>().PromptLevel(sceneToLoad);
         }
     }
 }
