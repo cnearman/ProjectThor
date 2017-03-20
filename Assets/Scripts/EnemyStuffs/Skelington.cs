@@ -14,8 +14,6 @@ public class Skelington : BaseEnemyMob
 
     NavMeshAgent agent;
 
-    int wallMask = 1 << 12;
-
     // Use this for initialization
     protected override void Start()
     {
