@@ -107,7 +107,7 @@ namespace Assets.Scripts
                 if (Physics.Raycast(screenRay, out hit, 100f))
                 {
                     metaData.Location = hit.point;
-                    var enemy = hit.collider.gameObject.GetComponent<BaseEnemy>();
+                    var enemy = hit.collider.gameObject.GetComponent<BaseEnemyMob>();
                     if (enemy != null)
                     {
                         metaData.TappedEntity = enemy.gameObject;
