@@ -9,25 +9,36 @@ namespace Assets.Scripts
     /// <summary>
     /// Class for managing the Touch Inputs provided by a player.
     /// </summary>
-    public class TouchManager
+    public class TouchManager : SingletonComponent<TouchManager>
     {
         private List<Point> points;
         private Point firstPoint;
         private Point lastPoint;
         private TouchProcessor tp;
 
-        public List<BaseTouch> touches;
+        public delegate void OnTapDelegate(Tap tapObject);
+        public delegate void OnLineDelegate(LineGesture lineObject);
+        public delegate void OnCircleDelegate(CircleGesture circleObject);
+        private static OnTapDelegate OnTap;
+        private static OnLineDelegate OnLine;
+        private static OnCircleDelegate OnCircle;
 
-        public TouchManager()
+        protected override void Awake()
         {
+            tp = new TouchProcessor();
             points = new List<Point>();
-            touches = new List<BaseTouch>();
+            Setup();
+        }
+
+        void Update()
+        {
+            PollTouches();   
         }
 
         /// <summary>
         /// Method to be called on each update to poll current touch points.
         /// </summary>
-        public void PollTouches()
+        private void PollTouches()
         {
             foreach(Touch currentTouch in Input.touches)
             {
@@ -39,13 +50,44 @@ namespace Assets.Scripts
                 else if (currentTouch.phase == TouchPhase.Ended)
                 {
                     AddPoint(currentTouch, TouchOrder.Last);
-                    tp.ProcessPoints(points, touches, firstPoint, lastPoint);
+                    var result = tp.ProcessPoints(points, firstPoint, lastPoint);
+                    CallEvent(result);
                 }
                 else
                 {
                     AddPoint(currentTouch);
                 }
             }
+        }
+
+        public static void RegisterOnTapEventHandler(OnTapDelegate otd)
+        {
+            OnTap += otd;
+        }
+
+        public static void UnregisterOnTapEventHandler(OnTapDelegate otd)
+        {
+            OnTap -= otd;
+        }
+
+        public static void RegisterOnLineEventHandler(OnLineDelegate otd)
+        {
+            OnLine += otd;
+        }
+
+        public static void UnregisterOnLineEventHandler(OnLineDelegate otd)
+        {
+            OnLine -= otd;
+        }
+
+        public static void RegisterOnCircleEventHandler(OnCircleDelegate otd)
+        {
+            OnCircle += otd;
+        }
+
+        public static void UnregisterOnCircleEventHandler(OnCircleDelegate otd)
+        {
+            OnCircle -= otd;
         }
 
         /// <summary>
@@ -62,7 +104,7 @@ namespace Assets.Scripts
                 var metaData = new PointMetadata();
                 var screenRay = Camera.main.ScreenPointToRay(currentTouch.position);
                 RaycastHit hit;
-                if (Physics.Raycast(screenRay, out hit, 100f, Globals.WallMask))
+                if (Physics.Raycast(screenRay, out hit, 100f))
                 {
                     metaData.Location = hit.point;
                     var enemy = hit.collider.gameObject.GetComponent<BaseEnemy>();
@@ -80,6 +122,31 @@ namespace Assets.Scripts
             }
 
             points.Add(point);
+        }
+
+        private void CallEvent(BaseTouch bt)
+        {
+            switch (bt.TouchType)
+            {
+                case TouchType.Tap:
+                    if (OnTap != null)
+                    {
+                        OnTap.Invoke(bt as Tap);
+                    }
+                    break;
+                case TouchType.Line:
+                    if(OnLine != null)
+                    {
+                        OnLine.Invoke(bt as LineGesture);
+                    }
+                    break;
+                case TouchType.Circle:
+                    if (OnCircle != null)
+                    {
+                        OnCircle.Invoke(bt as CircleGesture);
+                    }
+                    break;
+            }
         }
 
         /// <summary>
