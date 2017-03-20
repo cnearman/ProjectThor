@@ -20,8 +20,6 @@ public class UrukHai : BaseEnemyMob {
 
     public float attackSpeed;
     public float pullBackSpeed;
-
-    public GameObject testPlayer;
     
     NavMeshAgent agent;
 
@@ -62,18 +60,19 @@ public class UrukHai : BaseEnemyMob {
     protected override void MoveToAttack()
     {
         agent.speed = moveSpeedMoveToAttack;
-        agent.SetDestination(testPlayer.transform.position);
+        agent.SetDestination(currentTarget.transform.position);
     }
 
     protected override void PoweringUp()
     {
         agent.Stop();
-        transform.LookAt(testPlayer.transform);
+        transform.LookAt(currentTarget.transform);
     }
 
     protected override void StartAttack()
     {
         attacking = true;
+        swiper.Play();
     }
 
     protected override void Attack()
@@ -91,7 +90,7 @@ public class UrukHai : BaseEnemyMob {
     protected override void PrepareNextAttack()
     {
         agent.speed = moveSpeedPrepareNextAttack;
-        agent.SetDestination(testPlayer.transform.position);
+        agent.SetDestination(currentTarget.transform.position);
     }
 
     protected override void HighAlertAction()
