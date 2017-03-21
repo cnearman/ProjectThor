@@ -17,6 +17,7 @@ public class MapEditor : MonoBehaviour {
 
     Quaternion placeRot;
     
+    public int placeSize;
 
     public List<GameObject> pieces = new List<GameObject>();
     int currentP;
@@ -37,6 +38,8 @@ public class MapEditor : MonoBehaviour {
             gridText.text = "GridLock: OFF";
         }
 
+        placeSize = 1;
+
         placeRot = new Quaternion();
         placeRot = Quaternion.identity;
 
@@ -53,7 +56,22 @@ public class MapEditor : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         
-        if(Input.GetButtonDown("GridLock"))
+        if(Input.GetButtonDown("Size1"))
+        {
+            placeSize = 1;
+        }
+
+        if (Input.GetButtonDown("Size2"))
+        {
+            placeSize = 2;
+        }
+
+        if (Input.GetButtonDown("Size3"))
+        {
+            placeSize = 3;
+        }
+
+        if (Input.GetButtonDown("GridLock"))
         {
             isGrid = !isGrid;
             if(isGrid)
@@ -94,10 +112,85 @@ public class MapEditor : MonoBehaviour {
 
             if (Input.GetButtonDown("Fire1"))
             {
-                RaycastHit hitStuff;
-                if(!Physics.Raycast(new Vector3(place.x, 3f, place.z), Vector3.down, out hitStuff, 10f, wallMaskInvert))
+                if (placeSize == 1)
                 {
-                    Instantiate(selectedObject, place, placeRot, roomCore.transform);
+                    RaycastHit hitStuff;
+                    if (!Physics.Raycast(new Vector3(place.x, 3f, place.z), Vector3.down, out hitStuff, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, place, placeRot, roomCore.transform);
+                    }
+                } else if (placeSize == 2)
+                {
+                    RaycastHit hitStuff21;
+                    RaycastHit hitStuff22;
+                    RaycastHit hitStuff23;
+                    RaycastHit hitStuff24;
+
+                    if (!Physics.Raycast(new Vector3(place.x, 3f, place.z), Vector3.down, out hitStuff21, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x, place.y, place.z), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 1, 3f, place.z), Vector3.down, out hitStuff22, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 1, place.y, place.z), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x, 3f, place.z + 1), Vector3.down, out hitStuff23, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x, place.y, place.z + 1), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 1, 3f, place.z + 1), Vector3.down, out hitStuff24, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 1, place.y, place.z + 1), placeRot, roomCore.transform);
+                    }
+                }
+                else if (placeSize == 3)
+                {
+                    RaycastHit hitStuff31;
+                    RaycastHit hitStuff32;
+                    RaycastHit hitStuff33;
+                    RaycastHit hitStuff34;
+                    RaycastHit hitStuff35;
+                    RaycastHit hitStuff36;
+                    RaycastHit hitStuff37;
+                    RaycastHit hitStuff38;
+                    RaycastHit hitStuff39;
+
+                    if (!Physics.Raycast(new Vector3(place.x, 3f, place.z), Vector3.down, out hitStuff31, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x, place.y, place.z), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 1, 3f, place.z), Vector3.down, out hitStuff32, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 1, place.y, place.z), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 2, 3f, place.z), Vector3.down, out hitStuff33, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 2, place.y, place.z), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x, 3f, place.z + 1), Vector3.down, out hitStuff34, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x, place.y, place.z + 1), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x, 3f, place.z + 2), Vector3.down, out hitStuff35, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x, place.y, place.z + 2), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 1, 3f, place.z + 1), Vector3.down, out hitStuff36, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 1, place.y, place.z + 1), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 1, 3f, place.z + 2), Vector3.down, out hitStuff37, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 1, place.y, place.z + 2), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 2, 3f, place.z + 1), Vector3.down, out hitStuff38, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 2, place.y, place.z + 1), placeRot, roomCore.transform);
+                    }
+                    if (!Physics.Raycast(new Vector3(place.x + 2, 3f, place.z + 2), Vector3.down, out hitStuff39, 10f, wallMaskInvert))
+                    {
+                        Instantiate(selectedObject, new Vector3(place.x + 2, place.y, place.z + 2), placeRot, roomCore.transform);
+                    }
                 }
             }
 
