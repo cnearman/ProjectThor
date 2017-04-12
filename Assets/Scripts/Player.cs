@@ -54,6 +54,11 @@ namespace Assets.Scripts
 
         Vector3 preTapLocation;
 
+        // Photon Below
+
+        private PhotonView pv;
+        private PhotonTransformView ptv;
+
         private bool _performingAction
         {
             get
@@ -87,20 +92,29 @@ namespace Assets.Scripts
             }
         }
 
+        [OnStart]
+        public void PlayerStart()
+        {
+        }
+
         [OnAwake]
         public void PlayerAwake()
         {
             attackBuffer = Screen.height / abMod;
             agent = GetComponent<NavMeshAgent>();
-            inputType.text = "FUCK THIS SHIT.";
+            //inputType.text = "FUCK THIS SHIT.";
             _target = target;
             health = new Health(1000.0f);
             tapGrace = Screen.height / 15f;
-
-            TouchManager.RegisterOnTapEventHandler(ProcessTap);
-            TouchManager.RegisterOnCircleEventHandler(ProcessCircle);
-            TouchManager.RegisterOnLineEventHandler(ProcessLine);
-            //TouchManager.RegisterOnArrowUpEventHandler(ProcessArrowUp);
+            pv = GetComponent<PhotonView>();
+            ptv = GetComponent<PhotonTransformView>();
+            if (pv.isMine)
+            {
+                TouchManager.RegisterOnTapEventHandler(ProcessTap);
+                TouchManager.RegisterOnCircleEventHandler(ProcessCircle);
+                TouchManager.RegisterOnLineEventHandler(ProcessLine);
+                //TouchManager.RegisterOnArrowUpEventHandler(ProcessArrowUp);
+            }
         }
 
         /// <summary>
@@ -221,7 +235,12 @@ namespace Assets.Scripts
 
         [OnUpdate]
         public void PlayerUpdate()
-        {
+        { 
+            if (!pv.isMine && PhotonNetwork.connected)
+            {
+                return;
+            }
+
             /*
             //for testing
             if (Input.GetButtonDown("Fire1"))
@@ -255,7 +274,9 @@ namespace Assets.Scripts
                 }
             }*/
 
-            if(currentAttackCooldown > 0f)
+
+
+            if (currentAttackCooldown > 0f)
             {
                 currentAttackCooldown -= Time.deltaTime;
             }
@@ -304,6 +325,8 @@ namespace Assets.Scripts
                 Debug.Log("Performing Action :" + currentAction.GetType().Name);
                 currentAction.PerformAction();
             }
+
+            ptv.SetSynchronizedValues(GetComponent<Rigidbody>().velocity, 0);
         }
         
         float currentAngle;
