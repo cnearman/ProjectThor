@@ -114,6 +114,7 @@ namespace Assets.Scripts
                 TouchManager.RegisterOnCircleEventHandler(ProcessCircle);
                 TouchManager.RegisterOnLineEventHandler(ProcessLine);
                 //TouchManager.RegisterOnArrowUpEventHandler(ProcessArrowUp);
+                Camera.main.GetComponent<CameraFollow>().objectTofollow = gameObject;
             }
         }
 

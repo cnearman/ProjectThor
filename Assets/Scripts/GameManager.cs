@@ -16,6 +16,6 @@ public class GameManager : PunBehaviour {
 
     public override void OnJoinedRoom()
     {
-        GameObject spawnedPlayer = PhotonNetwork.Instantiate("Player 1", Vector3.zero, Quaternion.identity, 0);
+        GameObject spawnedPlayer = PhotonNetwork.Instantiate("Player 1", new Vector3(-151, 1.5f, -25), Quaternion.identity, 0);
     }
 }
