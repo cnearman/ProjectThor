@@ -12,12 +12,12 @@ public class Skelington : BaseEnemyMob
     public float patrolUpdate;
     float currentPatrolUpdate;
 
-    NavMeshAgent agent;
+    UnityEngine.AI.NavMeshAgent agent;
 
     // Use this for initialization
     protected override void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         startX = transform.position.x;
         startZ = transform.position.z;

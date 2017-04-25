@@ -46,7 +46,7 @@ namespace Assets.Scripts
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
 
-        NavMeshAgent agent;
+        UnityEngine.AI.NavMeshAgent agent;
 
         Dictionary<int, Vector2> touchDict = new Dictionary<int, Vector2>();
         public bool isAttacking;
@@ -101,7 +101,7 @@ namespace Assets.Scripts
         public void PlayerAwake()
         {
             attackBuffer = Screen.height / abMod;
-            agent = GetComponent<NavMeshAgent>();
+            agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             //inputType.text = "FUCK THIS SHIT.";
             _target = target;
             health = new Health(1000.0f);

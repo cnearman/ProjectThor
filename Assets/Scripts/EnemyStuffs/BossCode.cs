@@ -24,7 +24,7 @@ public class BossCode : MonoBehaviour {
     public GameObject testPlayer;
     
 
-    NavMeshAgent agent;
+    UnityEngine.AI.NavMeshAgent agent;
 
     bool inSecondForm;
 
@@ -35,7 +35,7 @@ public class BossCode : MonoBehaviour {
     {
         inSecondForm = false;
 
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         startX = -24f;
         startZ = -11f;

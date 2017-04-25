@@ -21,7 +21,7 @@ public class UrukHai : BaseEnemyMob {
     public float attackSpeed;
     public float pullBackSpeed;
     
-    NavMeshAgent agent;
+    UnityEngine.AI.NavMeshAgent agent;
 
     public GameObject hurtBox;
     public float hurtTime;
@@ -31,7 +31,7 @@ public class UrukHai : BaseEnemyMob {
 
     // Use this for initialization
     protected override void Start () {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         startX = transform.position.x;
         startZ = transform.position.z;
