@@ -31,12 +31,19 @@ namespace Assets.Scripts
         {
             IsCompleted = false;
             agent.ResetPath();
+            agent.isStopped = true;
             Debug.Log("Dash");
-            var hits = Physics.RaycastAll(_rigidbody.transform.position, Target - _rigidbody.transform.position, DashRange);
-            foreach ( var hit in hits)
+
+            var startingPosition = _rigidbody.transform.position;
+            agent.nextPosition = Target;
+            var endingPosition = _rigidbody.transform.position;
+            var dir = endingPosition - startingPosition;
+            var hits = Physics.RaycastAll(startingPosition, dir, DashRange);
+
+            foreach (var hit in hits)
             {
                 var other = hit.collider;
-                if(Tags.Any(m => other.CompareTag(m)))
+                if (Tags.Any(m => other.CompareTag(m)))
                 {
                     var entity = other.GetComponent<BaseEntity>();
                     if (entity != null)
@@ -46,11 +53,8 @@ namespace Assets.Scripts
                 }
                 // TODO: Handle obstacles
             }
-
-            _rigidbody.MovePosition(Target);
-
             IsCompleted = true;
-            agent.Resume();
+            agent.isStopped = false;
         }
     }
 }
