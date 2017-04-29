@@ -302,7 +302,8 @@ namespace Assets.Scripts
                     agent.Resume();
                     var pos = currentTargetEnemy.transform.position;
                     myWeapon.GetComponentInChildren<PlayerSword>().MakeItSplat(pos);
-                    currentTargetEnemy.GetComponent<EHealth>().health--;
+                    //currentTargetEnemy.GetComponent<EHealth>().health--;
+                    currentTargetEnemy.GetComponent<EnemyBaseRPC>().Damage();
                 }
             }
 
@@ -310,6 +311,7 @@ namespace Assets.Scripts
             {
                 if (Vector3.Magnitude(transform.position - currentTargetEnemy.transform.position) < maxAttackDistance)
                 {
+                    gameObject.GetComponent<PlayerRPC>().Attack(currentTargetEnemy.transform.position);
                     isAttacking = true;
                     currentAttackCooldown = attackCooldown;
                     StartAttack(currentTargetEnemy.transform.position);

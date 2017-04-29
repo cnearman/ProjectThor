@@ -14,7 +14,7 @@ public class EHealth : MonoBehaviour {
 	void Update () {
         if (health <= 0)
         {
-            Destroy(gameObject);
+            ///Destroy(gameObject);
         }
     }
 }
