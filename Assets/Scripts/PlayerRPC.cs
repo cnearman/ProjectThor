@@ -24,8 +24,9 @@ public class PlayerRPC : MonoBehaviour {
     }
 
     [PunRPC]
-    void AttckRPC(Vector3 enemyPos)
+    void AttackRPC(Vector3 enemyPos)
     {
+        Debug.Log("attack!");
         if(!m_PhotonView.isMine)
         {
             isAttacking = true;
