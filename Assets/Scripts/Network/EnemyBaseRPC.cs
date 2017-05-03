@@ -38,6 +38,7 @@ public class EnemyBaseRPC : MonoBehaviour {
     // Use this for initialization
     void Start () {
         m_PhotonView = GetComponent<PhotonView>();
+        m_PhotonTransformView = GetComponent<PhotonTransformView>();
         health = 3;
     }
 	

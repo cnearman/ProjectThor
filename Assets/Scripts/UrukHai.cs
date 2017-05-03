@@ -42,6 +42,28 @@ public class UrukHai : BaseEnemyMob {
         currentTarget = GameObject.Find("Player");
     }
 
+    protected override void Update()
+    {
+        if (currentState == possibleState.Patrol)
+        {
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            
+            currentTarget = null;
+            float distToPlayer = Mathf.Infinity;
+            foreach(GameObject currentPlayer in players)
+            {
+                float dist = Vector3.Distance(transform.position, currentPlayer.transform.position);
+                if(dist < distToPlayer)
+                {
+                    distToPlayer = dist;
+                    currentTarget = currentPlayer;
+                }
+            }
+            
+        }
+        base.Update();
+    }
+
     protected override void Patrol()
     {
         agent.speed = moveSpeedPatrol;

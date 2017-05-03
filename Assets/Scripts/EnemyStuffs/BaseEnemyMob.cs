@@ -206,6 +206,10 @@ public class BaseEnemyMob : MonoBehaviour {
 
     protected bool LOS(GameObject LOSTarget, float range)
     {
+        if(LOSTarget == null)
+        {
+            return false;
+        }
         Vector3 tempDist = LOSTarget.transform.position - transform.position;
         float acDist = tempDist.magnitude;
 
