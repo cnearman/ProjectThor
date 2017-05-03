@@ -168,7 +168,7 @@ namespace Assets.Scripts
                     });
                 }
             }
-            inputType.text = "TAP";
+            //inputType.text = "TAP";
             Debug.Log("We're doign it guys!");
         }
 
@@ -226,7 +226,7 @@ namespace Assets.Scripts
                     }
                 }
             }
-            inputType.text = "Line";
+            //inputType.text = "Line";
         }
 
        /* public void ProcessArrowUp(ArrowUp current)
