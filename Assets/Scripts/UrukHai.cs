@@ -29,8 +29,15 @@ public class UrukHai : BaseEnemyMob {
     public bool attacking;
     public bool coolDown;
 
+    PhotonView m_PhotonView;
+
     // Use this for initialization
     protected override void Start () {
+        m_PhotonView = GetComponent<PhotonView>();
+        if(!m_PhotonView.isMine)
+        {
+            //return;
+        }
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         startX = transform.position.x;
@@ -44,6 +51,10 @@ public class UrukHai : BaseEnemyMob {
 
     protected override void Update()
     {
+        if (!m_PhotonView.isMine)
+        {
+            //return;
+        }
         if (currentState == possibleState.Patrol)
         {
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");

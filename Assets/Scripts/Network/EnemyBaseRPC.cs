@@ -35,6 +35,12 @@ public class EnemyBaseRPC : MonoBehaviour {
         Destroy(gameObject);
     }
 
+    [PunRPC]
+    void AttackPosition(Vector3 pos)
+    {
+        
+    }
+
     // Use this for initialization
     void Start () {
         m_PhotonView = GetComponent<PhotonView>();
