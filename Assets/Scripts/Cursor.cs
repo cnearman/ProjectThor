@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Cursor : MonoBehaviour {
+public class Cursor : BaseEntity {
 
     public ParticleSystem bloom;
 
