@@ -7,10 +7,10 @@ namespace Assets.Scripts
 {
     public class DamageEffect : Effect
     {
-        private Damagable _damageTarget;
+        private IDamagable _damageTarget;
         private float _damageAmount;
 
-        public DamageEffect(Damagable damageTarget, float damageAmount)
+        public DamageEffect(IDamagable damageTarget, float damageAmount)
         {
             _damageTarget = damageTarget;
             _damageAmount = damageAmount;

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts
 {
-    public class Player : BaseEntity, Damagable
+    public class Player : BaseEntity, IDamagable
     {
         public bool testingLevel;
         public float abMod;
@@ -45,7 +45,7 @@ namespace Assets.Scripts
 
         int wallMask = (1 << 12) + (1 << 11);
         Health health;
-
+        
         UnityEngine.AI.NavMeshAgent agent;
 
         Dictionary<int, Vector2> touchDict = new Dictionary<int, Vector2>();
@@ -85,11 +85,11 @@ namespace Assets.Scripts
 
         public void ApplyDamage(float damage)
         {
-            health.Damage(damage);
+            /*health.Damage(damage);
             if (health.IsDead)
             {
                 Die();
-            }
+            }*/
         }
 
         [OnStart]
@@ -104,7 +104,6 @@ namespace Assets.Scripts
             agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
             //inputType.text = "FUCK THIS SHIT.";
             _target = target;
-            health = new Health(1000.0f);
             tapGrace = Screen.height / 15f;
             pv = GetComponent<PhotonView>();
             ptv = GetComponent<PhotonTransformView>();

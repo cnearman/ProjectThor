@@ -30,7 +30,7 @@ namespace Assets.Scripts
                 var entity = other.GetComponent<BaseEntity>();
                 if (entity != null)
                 {
-                    entity.Effects.Add(new DamageEffect((Damagable)entity, _damageValue));
+                    entity.Effects.Add(new DamageEffect((IDamagable)entity, _damageValue));
                 }
             }
         }

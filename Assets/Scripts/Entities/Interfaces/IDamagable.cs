@@ -1,3 +1,3 @@
-﻿public interface Damagable {
+﻿public interface IDamagable {
     void ApplyDamage(float damage);
 }

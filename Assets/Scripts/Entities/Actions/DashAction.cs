@@ -48,7 +48,7 @@ namespace Assets.Scripts
                     var entity = other.GetComponent<BaseEntity>();
                     if (entity != null)
                     {
-                        entity.Effects.Add(new DamageEffect((Damagable)entity, DashDamage));
+                        entity.Effects.Add(new DamageEffect((IDamagable)entity, DashDamage));
                     }
                 }
                 // TODO: Handle obstacles
